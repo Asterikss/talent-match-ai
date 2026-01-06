@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from faker import Faker
 from openai import OpenAI
 
-from scripts.utils import save_markdown_as_pdf
+from scripts.common import save_markdown_as_pdf
 
 
 def generate_skills() -> list[dict]:
