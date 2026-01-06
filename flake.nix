@@ -16,6 +16,21 @@
         system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
+
+          # Native dependencies for WeasyPrint
+          weasyLibs = [
+            pkgs.cairo
+            pkgs.pango
+            pkgs.gdk-pixbuf
+            pkgs.harfbuzz
+            pkgs.freetype
+            pkgs.libffi
+            pkgs.libjpeg
+            pkgs.fontconfig
+          ];
+
+          # Manylinux-compatible runtime set (useful for binary wheels)
+          manylinuxLibs = pkgs.pythonManylinuxPackages.manylinux1;
         in
         {
           default = pkgs.mkShell {
@@ -25,7 +40,7 @@
             ];
 
             env = lib.optionalAttrs pkgs.stdenv.isLinux {
-              LD_LIBRARY_PATH = lib.makeLibraryPath pkgs.pythonManylinuxPackages.manylinux1;
+              LD_LIBRARY_PATH = lib.makeLibraryPath (weasyLibs ++ manylinuxLibs);
             };
 
             shellHook = ''
