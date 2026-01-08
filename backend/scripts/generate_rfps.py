@@ -89,7 +89,7 @@ def generate_rfps_data_dicts(num_rfps: int, fake: Faker) -> list[dict]:
       "description": f"Seeking experienced development team for {random.choice(rfp_types).lower()}",
       "project_type": random.choice(rfp_types),
       "duration_months": random.randint(6, 24),
-      "team_size": random.randint(3, 12),
+      "team_size": random.randint(3, 5),
       "budget_range": random.choice(budget_ranges),
       "start_date": start_date.isoformat(),
       "requirements": requirements,

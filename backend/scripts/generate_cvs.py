@@ -191,7 +191,7 @@ def generate_project_records(
 
     project = {
       "id": f"PRJ-{i + 1:03d}",
-      "name": f"{random.choice(project_types)} for {random.choice(clients)}",
+      "title": f"{random.choice(project_types)} for {random.choice(clients)}",
       "client": random.choice(clients),
       "description": f"Development of {random.choice(project_types).lower()} with focus on scalability and performance",
       "start_date": start_date.isoformat(),
@@ -199,7 +199,7 @@ def generate_project_records(
       "estimated_duration_months": duration_months,
       "budget": random.randint(50000, 500000) if random.choice([True, False]) else None,
       "status": status,
-      "team_size": random.randint(2, 8),
+      "team_size": random.randint(3, 5),
       "requirements": requirements,
       "assigned_programmers": [],
     }
