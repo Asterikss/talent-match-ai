@@ -40,8 +40,8 @@ def generate_rfps_data_dicts(num_rfps: int, fake: Faker) -> list[dict]:
 
   skill_names = [
     "Python",
-    "JavaScript",
-    "TypeScript",
+    # "JavaScript",
+    # "TypeScript",
     "Java",
     "React",
     "Angular",
@@ -50,7 +50,7 @@ def generate_rfps_data_dicts(num_rfps: int, fake: Faker) -> list[dict]:
     "AWS",
     "Docker",
     "Kubernetes",
-    "PostgreSQL",
+    # "PostgreSQL",
     "MongoDB",
     "Machine Learning",
     "DevOps",
@@ -61,7 +61,7 @@ def generate_rfps_data_dicts(num_rfps: int, fake: Faker) -> list[dict]:
   for i in range(num_rfps):
     start_date = fake.date_between(start_date="+1m", end_date="+6m")
 
-    num_requirements = random.randint(4, 10)
+    num_requirements = random.randint(2, 3)
     requirements = []
     required_skills = random.sample(skill_names, num_requirements)
 
@@ -187,7 +187,7 @@ def generate_rfps(
 
 
 def main():
-  num_rfps = 2
+  num_rfps = 3
   rfps_dir = Path("data/RFP")
   generator_model = "gpt-4o-mini"
 

@@ -390,7 +390,7 @@ def generate_cvs(
 
 
 if __name__ == "__main__":
-  NUM_PROGRAMMERS = 3
+  NUM_PROGRAMMERS = 4
   NUM_PROJECTS = 2
   OUTPUT_DIR = Path("data/programmers")
   PROJECTS_FILE = Path("data/projects.json")
