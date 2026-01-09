@@ -20,10 +20,10 @@ def get_programmers(status: str | None = None) -> list[ProgrammerRead]:
 
     WITH p, collect(distinct s.id) as skills, collect(distinct proj.title) as active_projects
 
+    // role: p.level,
     RETURN {
       id: p.id,
       name: p.name,
-      role: p.level,  // Assuming 'level' or 'JobTitle' property exists
       location: p.location,
       skills: skills,
       is_assigned: size(active_projects) > 0,

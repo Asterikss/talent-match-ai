@@ -12,77 +12,66 @@ class MatchingRepository:
 
   def find_candidates(self, rfp_id: str, max_delay_months: int = 1) -> MatchResponse:
     """
-    complex matching algorithm:
-    1. Scores skills (Mandatory = 10pts, Optional = 5pts).
-    2. Calculates availability based on current active assignments.
-    3. Returns categorized candidates.
+    Finds candidates by matching RFP Needs -> Skill <- Person Has Skill.
+    Fixes:
+    1. Correctly collects Skill IDs from the NEEDS relationship.
+    2. Uses COALESCE for date handling (deadline vs start_date).
     """
-
-    # Cypher logic:
-    # 1. Find RFP and its required skills.
-    # 2. Match against all Persons.
-    # 3. Calculate Skill Score & Check Mandatories.
-    # 4. Check 'ASSIGNED_TO' relations where project is active.
-    # 5. Calculate gap between RFP.start_date and max(Assignment.end_date).
 
     query = """
         MATCH (r:RFP {id: $rfp_id})
         MATCH (p:Person)
 
         // --- 1. SKILL SCORING ---
-        // Find skills the RFP needs
+        // We match the RFP to the Skills it needs
         OPTIONAL MATCH (r)-[req:NEEDS]->(s:Skill)
-        WITH r, p, collect(req) as requirements
 
-        // Find skills the Person has intersecting with Requirements
+        // CRITICAL FIX: Collect a map containing the Node ID and the Edge properties
+        WITH r, p, collect({id: s.id, mandatory: req.mandatory}) as requirements
+
+        // Check which of these specific skills the Person has
         OPTIONAL MATCH (p)-[:HAS_SKILL]->(ps:Skill)
-        WHERE ps.id IN [x IN requirements | x.id] // Only care about relevant skills
+        WHERE ps.id IN [x IN requirements | x.id]
+
         WITH r, p, requirements, collect(ps.id) as person_skills
 
         // Calculate Score
-        // iterate over requirements, check if person has it
+        // Iterate over requirements map we built earlier
         WITH r, p, requirements, person_skills,
-             [req IN requirements |
-                CASE WHEN req.name IN person_skills THEN
-                    CASE WHEN req.mandatory THEN 10 ELSE 5 END
-                ELSE 0 END
-             ] as scores,
-             [req IN requirements WHERE req.mandatory AND NOT req.name IN person_skills | req.name] as missing_mandatory
-
-        WITH r, p, person_skills, missing_mandatory,
-             reduce(total = 0, s IN scores | total + s) as total_score,
+             reduce(score = 0, item IN requirements |
+                score + CASE
+                    WHEN item.id IN person_skills THEN 
+                        CASE WHEN item.mandatory THEN 10 ELSE 5 END 
+                    ELSE 0
+                END
+             ) as total_score,
+             [item IN requirements WHERE item.mandatory AND NOT item.id IN person_skills | item.id] as missing_mandatory,
              size(requirements) as total_reqs,
              size(person_skills) as matched_count
 
-        WHERE total_score > 0 // Filter out completely unqualified people
+        WHERE total_score > 0
 
         // --- 2. AVAILABILITY CALCULATION ---
-        // Find active projects the person is working on
         OPTIONAL MATCH (p)-[assign:ASSIGNED_TO]->(proj:Project)
         WHERE proj.status IN ['active', 'planned']
 
         WITH r, p, total_score, missing_mandatory, total_reqs, matched_count,
              max(date(assign.end_date)) as last_project_end,
-             date(r.start_date) as rfp_start
+             // Handle inconsistent date property naming (deadline vs start_date)
+             coalesce(date(r.start_date), date(r.deadline)) as rfp_start
 
-        // Calculate availability gap in days
-        // If last_project_end is null, they are free (gap = -999)
-        // If rfp_start > last_project_end, they are free (gap = negative)
-        // If rfp_start < last_project_end, they are busy (gap = positive days overlap)
-
-        // WITH r, p, totalScore, missingMandatory, requirements, personSkills,
         WITH r, p, total_score, missing_mandatory, total_reqs, matched_count, last_project_end, rfp_start,
              CASE
                 WHEN last_project_end IS NULL THEN -999
-                ELSE duration.inDays(rfp_start, last_project_end).days
+                ELSE duration.inDays(rfp_start, last_project_end).days 
              END as delay_days
 
-        // role: p.level,
         RETURN {
             id: p.id,
-            name: p.name,
+            name: coalesce(p.name, p.id),
+            role: coalesce(p.level, p.role, 'Developer'),
             total_score: total_score,
-            skill_match_percent: (toFloat(matched_count) / toFloat(total_reqs)) * 100,
+            skill_match_percent: CASE WHEN total_reqs = 0 THEN 0 ELSE (toFloat(matched_count) / toFloat(total_reqs)) * 100 END,
             missing_mandatory: missing_mandatory,
             delay_days: delay_days,
             last_end_date: toString(last_project_end)
@@ -91,16 +80,12 @@ class MatchingRepository:
         """
 
     results = self.graph.query(query, params={"rfp_id": rfp_id})
-    print("here")
-    print(results)
-    print("here2")
 
     response = MatchResponse(rfp_id=rfp_id)
 
     for row in results:
       data = row["candidate"]
-      # delay = data["delay_days"]
-      delay = data["delay_days"] if data["delay_days"] is not None else -999
+      delay = data["delay_days"]
 
       # Categorize
       if delay <= 0:
@@ -111,7 +96,7 @@ class MatchingRepository:
         status = "unavailable"
 
       candidate = CandidateMatch(
-        programmer_id=str(data["id"]),  # Cast to str just in case
+        programmer_id=str(data["id"]),
         programmer_name=data["name"],
         role=data.get("role"),
         total_score=data["total_score"],
