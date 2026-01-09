@@ -3,7 +3,7 @@ import logging
 from langchain_neo4j import Neo4jGraph
 
 from core.config import config
-from src.core.models import RFPStructure
+from core.models import RFPStructure
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +20,16 @@ def save_rfp_to_graph(rfp_data: RFPStructure):
   Uses MERGE to avoid duplicates.
   """
   graph = get_neo4j_graph()
+
+  # Ensure the RFP does not already exist
+  exists_cypher = """
+      MATCH (r:RFP {id: $id})
+      RETURN r.id AS id
+      LIMIT 1
+  """
+  if graph.query(exists_cypher, params={"id": rfp_data.id}):
+    raise ValueError(f"RFP with id '{rfp_data.id}' already exists.")
+    # TODO: provide a nice message later
 
   # Create/Update the RFP Node. Store the core attributes on the node.
   rfp_cypher = """
