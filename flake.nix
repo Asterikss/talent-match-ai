@@ -52,6 +52,25 @@
               [[ $DEVSHELL_SHELL ]] && exec "$DEVSHELL_SHELL"
             '';
           };
+
+          client = pkgs.mkShell {
+            packages = [
+              pkgs.python312
+              pkgs.uv
+            ];
+
+            env = lib.optionalAttrs pkgs.stdenv.isLinux {
+              LD_LIBRARY_PATH = lib.makeLibraryPath (manylinuxLibs);
+            };
+
+            shellHook = ''
+              cd client
+              uv sync
+              . .venv/bin/activate
+              [[ -f .env ]] && set -a && source .env && set +a
+              [[ $DEVSHELL_SHELL ]] && exec "$DEVSHELL_SHELL"
+            '';
+          };
         }
       );
     };
