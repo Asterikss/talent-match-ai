@@ -1,5 +1,5 @@
-from src.core.models import ProgrammerRead
-from src.services.neo4j_service import get_neo4j_graph
+from core.models import ProgrammerRead
+from services.neo4j_service import get_neo4j_graph
 
 
 def get_programmers(status: str | None = None) -> list[ProgrammerRead]:

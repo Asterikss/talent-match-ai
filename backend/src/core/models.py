@@ -13,8 +13,6 @@ class CandidateMatch(BaseModel):
   total_score: float
   skill_match_percent: float
   missing_mandatory_skills: list[str] = []
-
-  # Availability info
   status: Literal["available", "available_soon", "unavailable"]
   days_until_available: int
   current_project_end_date: str | None = None

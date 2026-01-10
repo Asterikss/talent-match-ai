@@ -24,6 +24,7 @@ async def _extract_rfp_data(text: str) -> RFPStructure:
   openai_chat_result = get_openai_chat(temperature=0)
   if isinstance(openai_chat_result, Err):
     raise  # TODO: propagate
+  # fails silently without api key
 
   # with_structured_output forces the LLM to return the Pydantic object
   structured_llm = openai_chat_result.ok().with_structured_output(RFPStructure)

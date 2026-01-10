@@ -1,6 +1,6 @@
 import logging
 
-from src.services.neo4j_service import get_neo4j_graph
+from services.neo4j_service import get_neo4j_graph
 
 logger = logging.getLogger(__name__)
 

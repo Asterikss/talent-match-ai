@@ -1,5 +1,5 @@
-from src.core.models import RFPRead
-from src.services.neo4j_service import get_neo4j_graph
+from core.models import RFPRead
+from services.neo4j_service import get_neo4j_graph
 
 
 def get_rfps() -> list[RFPRead]:
