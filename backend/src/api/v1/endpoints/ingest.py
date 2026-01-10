@@ -1,8 +1,9 @@
 import logging
 import tempfile
 from pathlib import Path
+from typing import Annotated
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File, HTTPException, UploadFile, status
 from pydantic import BaseModel
 
 from services.ingest_cv import ingest_cv
@@ -101,29 +102,50 @@ async def ingest_cv_upload(file: UploadFile = File(...)):
       Path(tmp_path).unlink(missing_ok=True)
 
 
-@router.post("/rfp/upload")
-async def ingest_rfp_upload(file: UploadFile = File(...)):
-  """Upload and ingest an RFP PDF."""
-  if not (file.filename and file.filename.lower().endswith(".pdf")):
-    raise HTTPException(status_code=400, detail="File must be a PDF")
+@router.post("/rfp/upload", status_code=status.HTTP_201_CREATED)
+async def ingest_rfp_upload(
+  file: Annotated[UploadFile, File(description="RFP PDF document")],
+) -> dict[str, str]:
+  """
+  Upload and ingest an RFP PDF.
 
-  tmp_path: str | None = None
+  Returns
+  -------
+  dict
+      {"message": "RFP ingested successfully", "filename": <original-filename>}
+  """
+  if not file.filename or not file.filename.lower().endswith(".pdf"):
+    raise HTTPException(
+      status_code=status.HTTP_400_BAD_REQUEST,
+      detail="File must be a PDF",
+    )
+
+  tmp_path: Path | None = None
   try:
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
       content = await file.read()
       tmp.write(content)
-      tmp_path = tmp.name
+      tmp_path = Path(tmp.name)
 
-    result = await ingest_rfp(tmp_path)
-    return result
-  except ValueError as e:
-    raise HTTPException(status_code=400, detail=str(e))
-  except Exception as e:
-    logger.error(f"RFP upload ingestion error: {str(e)}")
-    raise HTTPException(status_code=500, detail="Internal processing error")
+    await ingest_rfp(tmp_path)
+    return {
+      "message": "RFP ingested successfully",
+      "filename": file.filename,
+    }
+
+  except ValueError as exc:
+    raise HTTPException(
+      status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+    ) from exc
+  except Exception as exc:
+    logger.exception("RFP upload ingestion failed")
+    raise HTTPException(
+      status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+      detail="Internal processing error",
+    ) from exc
   finally:
-    if tmp_path:
-      Path(tmp_path).unlink(missing_ok=True)
+    if tmp_path and tmp_path.exists():
+      tmp_path.unlink(missing_ok=True)
 
 
 @router.post("/projects/upload")
