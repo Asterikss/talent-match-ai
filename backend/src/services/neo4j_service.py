@@ -3,7 +3,7 @@ import logging
 from langchain_neo4j import Neo4jGraph
 
 from core.config import config
-from core.models import RFPStructure
+from core.models.models import RFPStructure
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ def save_rfp_to_graph(rfp_data: RFPStructure):
         r.description = $description,
         r.client = $client,
         r.budget = $budget_range,
-        r.deadline = $start_date, // change to start_date later
+        r.deadline = $start_date,
         r.location = $location,
         r.team_size = $team_size
     """

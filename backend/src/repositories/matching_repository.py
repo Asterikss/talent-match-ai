@@ -1,6 +1,6 @@
 import logging
 
-from core.models import CandidateMatch, MatchResponse
+from core.models.models import CandidateMatch, MatchResponse
 from services.neo4j_service import get_neo4j_graph
 
 logger = logging.getLogger(__name__)
@@ -123,15 +123,13 @@ class MatchingRepository:
     2. Assign Programmers
     3. Delete RFP
     """
-    # We assume the RFP start_date is the project start_date
-    # We calculate end_date based on duration_months
 
     cypher = """
         MATCH (r:RFP {id: $rfp_id})
 
         // 1. Create Project Node
         CREATE (p:Project {
-            id: 'PROJ-' + r.id,  // Generate a new ID
+            id: 'PROJ-' + r.id,  // Generate a new ID TODO
             title: r.title,
             description: r.description,
             client: r.client,

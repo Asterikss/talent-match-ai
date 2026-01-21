@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 
-from core.models import AssignmentRequest, MatchResponse
+from core.models.models import AssignmentRequest, MatchResponse
 from repositories.matching_repository import MatchingRepository
 
 router = APIRouter(prefix="/match")

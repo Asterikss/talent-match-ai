@@ -1,4 +1,4 @@
-from core.models import RFPRead
+from core.models.models import RFPRead
 from services.neo4j_service import get_neo4j_graph
 
 

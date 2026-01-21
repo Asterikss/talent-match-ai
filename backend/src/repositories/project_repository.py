@@ -1,4 +1,4 @@
-from core.models import ProjectRead, ProjectStatus, ProjectStructure
+from core.models.models import ProjectRead, ProjectStatus, ProjectStructure
 from services.neo4j_service import get_neo4j_graph
 
 
