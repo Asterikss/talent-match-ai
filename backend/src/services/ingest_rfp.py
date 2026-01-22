@@ -5,15 +5,13 @@ from pathlib import Path
 
 from result import Err
 
+from core.constants import RFP_JSON_FILE, RFP_STORAGE_DIR
 from core.models.rfp_models import RFPStructure
 from core.utils import extract_text_from_pdf
 from repositories.rfp_repository import get_next_rfp_id, save_rfp
 from services.openai_service import get_openai_chat
 
 logger = logging.getLogger(__name__)
-
-RFP_STORAGE_DIR = Path("data/RFP")
-RFP_JSON_FILE = RFP_STORAGE_DIR / "rfps.json"
 
 
 async def _extract_rfp_data(text: str) -> RFPStructure:
@@ -22,7 +20,7 @@ async def _extract_rfp_data(text: str) -> RFPStructure:
   """
   openai_chat_result = get_openai_chat(temperature=0)
   if isinstance(openai_chat_result, Err):
-    raise  # TODO: propagate; fails silently without api key
+    raise  # TODO: propagate
 
   structured_llm = openai_chat_result.ok().with_structured_output(RFPStructure)
 
@@ -57,7 +55,6 @@ def _save_to_json_file(rfp_data: RFPStructure):
       logger.warning("rfps.json was corrupted, starting fresh.")
       current_data = []
 
-  # Check for duplicates (update if exists, otherwise append)
   rfp_dict = rfp_data.model_dump()
 
   updated = False

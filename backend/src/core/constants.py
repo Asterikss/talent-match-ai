@@ -1,6 +1,11 @@
+from pathlib import Path
+
 OPENAI_MODEL = "gpt-4o-mini"
 OPENAI_QUERY_MODEL = "gpt-4o"
 OPENAI_TEMPERATURE = 0
+
+RFP_STORAGE_DIR = Path("data/RFP")
+RFP_JSON_FILE = RFP_STORAGE_DIR / "rfps.json"
 
 # Knowledge Graph Schema
 ALLOWED_NODES = [

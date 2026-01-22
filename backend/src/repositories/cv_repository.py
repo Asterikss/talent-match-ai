@@ -31,7 +31,7 @@ def upsert_cv(cv: CVStructure):
             SET r.experience_level = $proficiency
             """
     for skill in cv.skills:
-      normalized_name = skill.skill_name.strip().lower().title()
+      normalized_name = skill.skill_name.strip().title()
       graph.query(
         cypher,
         params={
@@ -54,7 +54,7 @@ def upsert_cv(cv: CVStructure):
         cypher,
         params={
           "person_name": cv.full_name,
-          "company_name": company_name.strip().lower().capitalize(),
+          "company_name": company_name.strip().capitalize(),
         },
       )
 
@@ -73,7 +73,7 @@ def upsert_cv(cv: CVStructure):
       cypher,
       params={
         "person_name": cv.full_name,
-        "uni_name": cv.university_name.strip().lower().title(),
+        "uni_name": cv.university_name.strip().title(),
       },
     )
 
@@ -90,7 +90,7 @@ def upsert_cv(cv: CVStructure):
         cypher,
         params={
           "person_name": cv.full_name,
-          "cert_name": cert_name.strip().lower().title(),
+          "cert_name": cert_name.strip().title(),
         },
       )
 
@@ -109,7 +109,7 @@ def upsert_cv(cv: CVStructure):
       cypher,
       params={
         "person_name": cv.full_name,
-        "location_name": cv.location.strip().lower().title(),
+        "location_name": cv.location.strip().title(),
       },
     )
 
