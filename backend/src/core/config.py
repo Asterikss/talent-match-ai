@@ -15,6 +15,9 @@ class Config(BaseSettings):
   NEO4J_PASSWORD: str = "password"
 
   OPENAI_API_KEY: str = ""
+  OPENAI_DEFAULT_MODEL: str = "gpt-4o-mini"
+  OPENAI_DEFAULT_TEMPERATURE: float = 0
+  OPENAI_GRAPH_QUERY_MODEL: str = "gpt-4o"
 
   USE_LANGCHAIN_LLM_GRAPH_TRANSFORMER: bool = False
 

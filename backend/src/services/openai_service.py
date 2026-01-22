@@ -4,13 +4,13 @@ from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
 from result import Err, Ok, Result
 
-from core import constants
 from core.config import config
 
 
 @lru_cache(maxsize=1)
 def get_openai_chat(
-  model_name: str = constants.OPENAI_MODEL, temperature: float = 0
+  model_name: str = config.OPENAI_DEFAULT_MODEL,
+  temperature: float = config.OPENAI_DEFAULT_TEMPERATURE,
 ) -> Result[ChatOpenAI, str]:
   api_key = config.OPENAI_API_KEY
   if not api_key:
