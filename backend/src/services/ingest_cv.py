@@ -20,8 +20,8 @@ logger = logging.getLogger(__name__)
 
 async def ingest_cv(path: str) -> list[dict[str, Any]]:
   """
-  Main entry point. Accepts single file or directory. Non-recursive. Delegates
-  to specific processing logic based on config.
+  Accepts a single file or a directory. Non-recursive. Delegates to specific
+  processing logic based on the config (USE_LANGCHAIN_LLM_GRAPH_TRANSFORMER).
   """
   path_obj: Path = Path(path).expanduser().resolve()
   if not path_obj.exists():

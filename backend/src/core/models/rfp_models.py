@@ -6,13 +6,13 @@ class SkillRequirement(BaseModel):
     description="The name of the technical skill (e.g., Python, AWS)"
   )
   min_proficiency: str = Field(
-    description="Minimum required level (e.g., Expert, Advanced, Intermediate)"
+    description="Must be one of: Beginner, Intermediate, Advanced, Expert"
   )
   is_mandatory: bool = Field(
     description="True if listed as Required/Mandatory, False if Preferred/Nice-to-have"
   )
   preferred_certifications: list[str] = Field(
-    default=[], description="List of certifications mentioned for this skill"
+    default_factory=list, description="List of certifications mentioned for this skill"
   )
 
 

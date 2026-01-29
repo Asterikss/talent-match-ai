@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
@@ -12,24 +11,23 @@ class CandidateMatch(BaseModel):
   role: str | None = None
   total_score: float
   skill_match_percent: float
-  missing_mandatory_skills: list[str] = []
+  missing_mandatory_skills: list[str] = Field(default_factory=list)
+  missing_optional_skills: list[str] = Field(default_factory=list)
   status: Literal["available", "available_soon", "unavailable"]
-  days_until_available: int
+  days_until_available: int | None = None
   current_project_end_date: str | None = None
+  current_project_name: str | None = None
 
 
 class MatchResponse(BaseModel):
   rfp_id: str
-  perfect_matches: list[CandidateMatch] = []  # Available & Skilled
-  future_matches: list[CandidateMatch] = []  # Skilled but busy briefly
-  partial_matches: list[CandidateMatch] = []  # Available but missing mandatory skills
+  perfect_matches: list[CandidateMatch] = Field(default_factory=list)
+  future_matches: list[CandidateMatch] = Field(default_factory=list)
+  partial_matches: list[CandidateMatch] = Field(default_factory=list)
 
 
 class AssignmentRequest(BaseModel):
-  programmer_ids: list[str]  # List of IDs to assign
-
-
-### Read Models for UI. Should move to schemas
+  programmer_ids: list[str]
 
 
 class ProgrammerRead(BaseModel):
@@ -37,9 +35,16 @@ class ProgrammerRead(BaseModel):
   name: str | None = None
   role: str | None = None
   location: str | None = None
-  skills: list[str] = []
   is_assigned: bool = False
   current_project: str | None = None
+  skills: dict[str, list[str]] = Field(
+    default_factory=lambda: {
+      "Expert": [],
+      "Advanced": [],
+      "Intermediate": [],
+      "Beginner": [],
+    }
+  )
 
 
 class ProjectRead(BaseModel):
@@ -48,8 +53,14 @@ class ProjectRead(BaseModel):
   client: str | None = None
   status: str | None = None
   description: str | None = None
-  required_skills: list[str] = []
-  assigned_team: list[dict[str, Any]] = []  # Simple list of names/roles
+  required_skills: list[str] = Field(default_factory=list)
+  assigned_team: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class _RFPSkillRequirement(BaseModel):
+  name: str
+  level: Literal["Beginner", "Intermediate", "Advanced", "Expert"]
+  mandatory: bool
 
 
 class RFPRead(BaseModel):
@@ -57,42 +68,4 @@ class RFPRead(BaseModel):
   title: str | None = None
   client: str | None = None
   budget: str | None = None
-  needed_skills: list[dict[str, Any]] = []  # Skill + proficiency level
-
-
-### Projects types
-
-
-class ProjectStatus(str, Enum):
-  COMPLETED = "completed"
-  ACTIVE = "active"
-  PLANNED = "planned"
-  ON_HOLD = "on_hold"
-
-
-class AssignedProgrammer(BaseModel):
-  programmer_name: str
-  programmer_id: int  # Keeping ID from JSON, though we match on Name usually
-  assignment_start_date: str | None = None
-  assignment_end_date: str | None = None
-
-
-class ProjectRequirement(BaseModel):
-  skill_name: str
-  min_proficiency: str
-  is_mandatory: bool
-
-
-class ProjectStructure(BaseModel):
-  id: str
-  name: str
-  client: str
-  description: str
-  start_date: str | None = None
-  end_date: str | None = None
-  estimated_duration_months: int | None = None
-  budget: int | None = None
-  status: ProjectStatus
-  team_size: int
-  requirements: list[ProjectRequirement] = []
-  assigned_programmers: list[AssignedProgrammer] = []
+  needed_skills: list[_RFPSkillRequirement] = Field(default_factory=list)

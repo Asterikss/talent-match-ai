@@ -38,7 +38,6 @@ async def process_query(question: str) -> dict[str, Any]:
     result: dict[str, Any] = await chain.ainvoke({"query": question})
 
     # Extract intermediate step (the actual Cypher query generated)
-    # intermediate_steps is a list of dicts or tuples depending on chain version
     cypher_query = ""
     steps = result.get("intermediate_steps", [])
     if steps and isinstance(steps[0], dict):
@@ -71,12 +70,10 @@ def get_example_queries_list() -> dict[str, list[str]]:
       "Find people who are currently assigned to the same project.",
     ],
     "Skill-based Queries": [
-      "Who has both Docker and Kubernetes skills?",
       "Who has cloud computing skills like AWS?",
       "What programming languages are most common?",
     ],
     "Company Experience": [
-      "Find people who worked at the same companies.",
       "What companies have the most former employees in our database?",
       "List all companies mentioned in the CVs.",
     ],
@@ -87,7 +84,7 @@ def get_example_queries_list() -> dict[str, list[str]]:
     ],
     "Location and Geography": [
       "What cities have the most people?",
-      "Who is located in New York?",
+      "Who is located in Deniseborough?",
       "Show all locations in our database.",
     ],
     "Certification Analysis": [
