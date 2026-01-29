@@ -11,73 +11,124 @@ class MatchingRepository:
     self.graph = get_neo4j_graph()
 
   def find_candidates(self, rfp_id: str, max_delay_months: int = 1) -> MatchResponse:
-    """
-    Finds candidates by matching RFP Needs -> Skill <- Person Has Skill.
-    Fixes:
-    1. Correctly collects Skill IDs from the NEEDS relationship.
-    2. Uses COALESCE for date handling (deadline vs start_date).
-    """
-
     query = """
-        MATCH (r:RFP {id: $rfp_id})
-        MATCH (p:Person)
+      MATCH (r:RFP {id: $rfp_id})
+      MATCH (p:Person)
 
-        // --- 1. SKILL SCORING ---
-        // We match the RFP to the Skills it needs
-        OPTIONAL MATCH (r)-[req:NEEDS]->(s:Skill)
+      // COLLECT RFP REQUIREMENTS
+      OPTIONAL MATCH (r)-[req:NEEDS]->(s:Skill)
+      WITH r, p,
+           collect({
+             id: s.id,
+             mandatory: req.mandatory,
+             req_level:
+               CASE req.proficiency
+                 WHEN 'Beginner' THEN 1
+                 WHEN 'Intermediate' THEN 2
+                 WHEN 'Advanced' THEN 3
+                 WHEN 'Expert' THEN 4
+                 ELSE 0
+               END
+           }) AS requirements
 
-        // CRITICAL FIX: Collect a map containing the Node ID and the Edge properties
-        WITH r, p, collect({id: s.id, mandatory: req.mandatory}) as requirements
+      // COLLECT PERSON SKILLS
+      OPTIONAL MATCH (p)-[hs:HAS_SKILL]->(ps:Skill)
+      WITH r, p, requirements,
+           collect({
+             id: ps.id,
+             person_level:
+               CASE hs.proficiency
+                 WHEN 'Beginner' THEN 1
+                 WHEN 'Intermediate' THEN 2
+                 WHEN 'Advanced' THEN 3
+                 WHEN 'Expert' THEN 4
+                 ELSE 0
+               END
+           }) AS person_skills
 
-        // Check which of these specific skills the Person has
-        OPTIONAL MATCH (p)-[:HAS_SKILL]->(ps:Skill)
-        WHERE ps.id IN [x IN requirements | x.id]
+      // SCORE CALCULATION
+      WITH r, p, requirements, person_skills,
 
-        WITH r, p, requirements, collect(ps.id) as person_skills
-
-        // Calculate Score
-        // Iterate over requirements map we built earlier
-        WITH r, p, requirements, person_skills,
-             reduce(score = 0, item IN requirements |
-                score + CASE
-                    WHEN item.id IN person_skills THEN 
-                        CASE WHEN item.mandatory THEN 10 ELSE 5 END 
-                    ELSE 0
+      // Total score
+      reduce(score = 0, req IN requirements |
+        score +
+        CASE
+          WHEN any(ps IN person_skills WHERE ps.id = req.id) THEN
+            CASE
+              WHEN req.mandatory THEN
+                CASE
+                  WHEN (head([ps IN person_skills WHERE ps.id = req.id]).person_level - req.req_level) >= 0 THEN 10
+                  WHEN (head([ps IN person_skills WHERE ps.id = req.id]).person_level - req.req_level) = -1 THEN 6
+                  ELSE 3
                 END
-             ) as total_score,
-             [item IN requirements WHERE item.mandatory AND NOT item.id IN person_skills | item.id] as missing_mandatory,
-             size(requirements) as total_reqs,
-             size(person_skills) as matched_count
+              ELSE
+                CASE
+                  WHEN (head([ps IN person_skills WHERE ps.id = req.id]).person_level - req.req_level) >= 0 THEN 5
+                  WHEN (head([ps IN person_skills WHERE ps.id = req.id]).person_level - req.req_level) = -1 THEN 3
+                  ELSE 1
+                END
+            END
+          ELSE 0
+        END
+      ) AS total_score,
 
-        WHERE total_score > 0
+      // Missing skills
+      [item IN requirements
+       WHERE item.mandatory
+         AND NOT any(ps IN person_skills WHERE ps.id = item.id)
+       | item.id] AS missing_mandatory,
 
-        // --- 2. AVAILABILITY CALCULATION ---
-        OPTIONAL MATCH (p)-[assign:ASSIGNED_TO]->(proj:Project)
-        WHERE proj.status IN ['active', 'planned']
+      [item IN requirements
+       WHERE NOT item.mandatory
+         AND NOT any(ps IN person_skills WHERE ps.id = item.id)
+       | item.id] AS missing_optional,
 
-        WITH r, p, total_score, missing_mandatory, total_reqs, matched_count,
-             max(date(assign.end_date)) as last_project_end,
-             // Handle inconsistent date property naming (deadline vs start_date)
-             coalesce(date(r.start_date), date(r.deadline)) as rfp_start
+      // Max possible score
+      reduce(max_score = 0, item IN requirements |
+        max_score + CASE WHEN item.mandatory THEN 10 ELSE 5 END
+      ) AS max_score
 
-        WITH r, p, total_score, missing_mandatory, total_reqs, matched_count, last_project_end, rfp_start,
-             CASE
-                WHEN last_project_end IS NULL THEN -999
-                ELSE duration.inDays(rfp_start, last_project_end).days 
-             END as delay_days
+      WHERE total_score > 0
 
-        RETURN {
-            id: p.id,
-            name: coalesce(p.name, p.id),
-            role: coalesce(p.level, p.role, 'Developer'),
-            total_score: total_score,
-            skill_match_percent: CASE WHEN total_reqs = 0 THEN 0 ELSE (toFloat(matched_count) / toFloat(total_reqs)) * 100 END,
-            missing_mandatory: missing_mandatory,
-            delay_days: delay_days,
-            last_end_date: toString(last_project_end)
-        } as candidate
-        ORDER BY total_score DESC
-        """
+      // AVAILABILITY & PROJECT CONTEXT
+      OPTIONAL MATCH (p)-[assign:ASSIGNED_TO]->(proj:Project)
+      WHERE proj.status IN ['active', 'planned']
+
+      WITH r, p, total_score, max_score,
+           missing_mandatory, missing_optional,
+           max(date(assign.end_date)) AS last_project_end,
+           head(collect(proj.title)) AS last_project_title,
+           coalesce(date(r.start_date), date(r.deadline)) AS rfp_start
+
+      WITH r, p, total_score, max_score,
+           missing_mandatory, missing_optional,
+           last_project_end, last_project_title, rfp_start,
+           CASE
+             WHEN last_project_end IS NULL THEN -999
+             ELSE duration.inDays(rfp_start, last_project_end).days
+           END AS delay_days
+
+      RETURN {
+        id: p.id,
+        name: coalesce(p.name, p.id),
+        role: 'Developer',
+
+        total_score: total_score,
+        skill_match_percent:
+          CASE
+            WHEN max_score = 0 THEN 0
+            ELSE (toFloat(total_score) / toFloat(max_score)) * 100
+          END,
+
+        missing_mandatory: missing_mandatory,
+        missing_optional: missing_optional,
+
+        delay_days: delay_days,
+        last_end_date: toString(last_project_end),
+        last_project_title: last_project_title
+      } AS candidate
+      ORDER BY total_score DESC
+    """
 
     results = self.graph.query(query, params={"rfp_id": rfp_id})
 
@@ -87,7 +138,6 @@ class MatchingRepository:
       data = row["candidate"]
       delay = data["delay_days"]
 
-      # Categorize
       if delay <= 0:
         status = "available"
       elif delay <= (max_delay_months * 30):
@@ -102,17 +152,36 @@ class MatchingRepository:
         total_score=data["total_score"],
         skill_match_percent=round(data["skill_match_percent"], 1),
         missing_mandatory_skills=data["missing_mandatory"],
+        missing_optional_skills=data["missing_optional"],
         status=status,
-        days_until_available=delay if delay > 0 else 0,
+        days_until_available=max(delay, 0),
         current_project_end_date=data["last_end_date"],
+        current_project_name=data.get("last_project_title"),
       )
 
-      if len(candidate.missing_mandatory_skills) > 0:
+      skill_fit_ok = (
+        len(candidate.missing_mandatory_skills) == 0 and candidate.total_score > 0
+      )
+
+      if not skill_fit_ok:
         response.partial_matches.append(candidate)
       elif status == "available":
         response.perfect_matches.append(candidate)
       elif status == "available_soon":
         response.future_matches.append(candidate)
+
+    response.perfect_matches.sort(
+      key=lambda c: (c.total_score, c.skill_match_percent),
+      reverse=True,
+    )
+    response.future_matches.sort(
+      key=lambda c: (c.total_score, c.skill_match_percent),
+      reverse=True,
+    )
+    response.partial_matches.sort(
+      key=lambda c: (c.total_score, c.skill_match_percent),
+      reverse=True,
+    )
 
     return response
 
@@ -127,7 +196,7 @@ class MatchingRepository:
     cypher = """
         MATCH (r:RFP {id: $rfp_id})
 
-        // 1. Create Project Node
+        // Create Project Node
         CREATE (p:Project {
             id: 'PROJ-' + r.id,  // Generate a new ID TODO
             title: r.title,
@@ -141,14 +210,14 @@ class MatchingRepository:
             team_size: r.team_size
         })
 
-        // 2. Copy Requirements (RFP)-[:NEEDS]->(Skill) ==> (Project)-[:REQUIRES]->(Skill)
+        // Copy Requirements (RFP)-[:NEEDS]->(Skill) ==> (Project)-[:REQUIRES]->(Skill)
         WITH r, p
         MATCH (r)-[needs:NEEDS]->(s:Skill)
         CREATE (p)-[req:REQUIRES]->(s)
-        SET req.minimum_level = needs.experience_level,
+        SET req.minimum_level = needs.proficiency,
             req.mandatory = needs.mandatory
 
-        // 3. Assign Selected Programmers
+        // Assign Selected Programmers
         WITH r, p
         MATCH (u:Person)
         WHERE u.id IN $programmer_ids OR toInteger(u.id) IN $programmer_ids
@@ -158,7 +227,7 @@ class MatchingRepository:
             assign.end_date = p.end_date,
             assign.allocation_percentage = 100
 
-        // 4. Delete the RFP
+        // Delete the RFP
         DETACH DELETE r
 
         RETURN p.id as new_project_id
