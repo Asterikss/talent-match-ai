@@ -24,13 +24,10 @@ class IngestRequest(BaseModel):
 
 @router.post("/cv")
 async def ingest_cv_endpoint(request: IngestRequest):
-  """
-  Ingest a single CV PDF or every PDF inside a directory (non-recursive).
-  """
+  """Ingest a single CV PDF or every PDF inside a directory (non-recursive)."""
   try:
-    results: list[dict] = await ingest_cv(request.file_path)
-    return results[0]  # for now
-    # return results if len(results) != 1 else results[0]   # backward compat
+    results: list[dict] = await ingest_cv(Path(request.file_path))
+    return results[0]  # TODO: handle multiple retrun values
   except FileNotFoundError:
     raise HTTPException(status_code=404, detail="CV file or directory not found")
   except ValueError as e:
@@ -42,13 +39,10 @@ async def ingest_cv_endpoint(request: IngestRequest):
 
 @router.post("/rfp")
 async def ingest_rfp_endpoint(request: IngestRequest):
-  """
-  Ingest a single RFP PDF or every PDF inside a directory.
-  """
+  """Ingest a single RFP PDF or every RFP PDF inside a directory."""
   try:
-    results: list[dict] = await ingest_rfp(request.file_path)
-    # return results if len(results) != 1 else results[0]
-    return results[0]  # for now
+    results: list[dict] = await ingest_rfp(Path(request.file_path))
+    return results[0]  # TODO: handle multiple retrun values
   except FileNotFoundError:
     raise HTTPException(status_code=404, detail="RFP file or directory not found")
   except ValueError as e:
@@ -83,12 +77,12 @@ async def ingest_cv_upload(file: UploadFile = File(...)):
   if not (file.filename and file.filename.lower().endswith(".pdf")):
     raise HTTPException(status_code=400, detail="File must be a PDF")
 
-  tmp_path: str | None = None
+  tmp_path: Path | None = None
   try:
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
       content = await file.read()
       tmp.write(content)
-      tmp_path = tmp.name
+      tmp_path = Path(tmp.name)
 
     result = await ingest_cv(tmp_path)
     return result
@@ -106,14 +100,7 @@ async def ingest_cv_upload(file: UploadFile = File(...)):
 async def ingest_rfp_upload(
   file: Annotated[UploadFile, File(description="RFP PDF document")],
 ) -> dict[str, str]:
-  """
-  Upload and ingest an RFP PDF.
-
-  Returns
-  -------
-  dict
-      {"message": "RFP ingested successfully", "filename": <original-filename>}
-  """
+  """Upload and ingest an RFP PDF."""
   if not file.filename or not file.filename.lower().endswith(".pdf"):
     raise HTTPException(
       status_code=status.HTTP_400_BAD_REQUEST,
