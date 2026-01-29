@@ -99,14 +99,13 @@ async def _process_rfp(pdf_path: Path) -> dict:
   }
 
 
-async def ingest_rfp(file_path: str) -> list[dict]:
+async def ingest_rfp(path: Path) -> list[dict]:
   """Main pipeline: PDF -> Text -> Pydantic -> JSON and Neo4j"""
-  path_obj: Path = Path(file_path)
-  if not path_obj.exists():
-    raise FileNotFoundError(f"File not found: {file_path}")
+  if not path.exists():
+    raise FileNotFoundError(f"File not found: {path}")
 
-  if path_obj.is_dir():
-    pdf_files = sorted(path_obj.glob("*.pdf"))
+  if path.is_dir():
+    pdf_files = sorted(path.glob("*.pdf"))
     if not pdf_files:
       raise ValueError("Directory contains no PDF files")
 
@@ -120,7 +119,7 @@ async def ingest_rfp(file_path: str) -> list[dict]:
       for r in results
     ]
 
-  if not path_obj.suffix.lower() == ".pdf":
+  if not path.suffix.lower() == ".pdf":
     raise ValueError("Provided file is not a PDF")
 
-  return [await _process_rfp(path_obj)]
+  return [await _process_rfp(path)]

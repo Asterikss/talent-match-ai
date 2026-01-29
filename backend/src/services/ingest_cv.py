@@ -18,12 +18,12 @@ from src.core.models.cv_models import CVStructure
 logger = logging.getLogger(__name__)
 
 
-async def ingest_cv(path: str) -> list[dict[str, Any]]:
+async def ingest_cv(path: Path) -> list[dict[str, Any]]:
   """
   Accepts a single file or a directory. Non-recursive. Delegates to specific
   processing logic based on the config (USE_LANGCHAIN_LLM_GRAPH_TRANSFORMER).
   """
-  path_obj: Path = Path(path).expanduser().resolve()
+  path_obj: Path = path.expanduser().resolve()
   if not path_obj.exists():
     raise FileNotFoundError(f"Path not found: {path}")
 
