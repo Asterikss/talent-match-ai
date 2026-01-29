@@ -17,12 +17,12 @@ def _get_page_bg_data() -> str:
   }}
 
   [data-testid="stAppViewContainer"]{{
-      background-image: url("data:image/png;base64,{_get_img_as_base64("./assets/output.jpg")}");
+      background-image: url("data:image/png;base64,{_get_img_as_base64("./assets/background.jpg")}");
       background-size: cover;
   }}
 
   [data-testid="stSidebar"]> div:first-child{{
-    background-image: url("data:image/png;base64,{_get_img_as_base64("./assets/dark_bg.jpg")}");
+    background-image: url("data:image/png;base64,{_get_img_as_base64("./assets/sidebar_background.jpg")}");
     background-size: cover;
   }}
   </style>
