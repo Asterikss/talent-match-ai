@@ -9,7 +9,7 @@ search, natural language querying, and constraint-aware matching algorithms to f
 the perfect developer for every project.
 
 ## System Architecture
-![System Architecture](./docs/system_architecture.svg)
+![System Architecture](./docs/system_architecture_graph.svg)
 
 ### The Problem
 Modern staffing is broken. It relies on:
