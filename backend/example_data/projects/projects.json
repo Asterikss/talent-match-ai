@@ -1,0 +1,65 @@
+[
+  {
+    "id": "PRJ-001",
+    "title": "Cloud Migration for RetailMax",
+    "client": "EduTech Solutions",
+    "description": "Development of data analytics dashboard with focus on scalability and performance",
+    "start_date": "2025-08-13",
+    "end_date": null,
+    "estimated_duration_months": 17,
+    "budget": 378046,
+    "status": "active",
+    "team_size": 5,
+    "requirements": [
+      {
+        "skill_name": "Angular",
+        "min_proficiency": "Intermediate",
+        "is_mandatory": true
+      },
+      {
+        "skill_name": "React",
+        "min_proficiency": "Intermediate",
+        "is_mandatory": true
+      }
+    ],
+    "assigned_programmers": []
+  },
+  {
+    "id": "PRJ-002",
+    "title": "API Gateway Implementation for GreenEnergy Co",
+    "client": "SmartCity Initiative",
+    "description": "Development of api gateway implementation with focus on scalability and performance",
+    "start_date": "2025-07-19",
+    "end_date": "2026-07-14",
+    "estimated_duration_months": 12,
+    "budget": 234412,
+    "status": "completed",
+    "team_size": 4,
+    "requirements": [
+      {
+        "skill_name": "MongoDB",
+        "min_proficiency": "Intermediate",
+        "is_mandatory": false
+      },
+      {
+        "skill_name": "Java",
+        "min_proficiency": "Intermediate",
+        "is_mandatory": true
+      }
+    ],
+    "assigned_programmers": [
+      {
+        "programmer_name": "Jennifer Soto",
+        "programmer_id": 4,
+        "assignment_start_date": "2025-07-19",
+        "assignment_end_date": "2026-06-27"
+      },
+      {
+        "programmer_name": "Joseph Beard",
+        "programmer_id": 1,
+        "assignment_start_date": "2025-07-19",
+        "assignment_end_date": "2026-06-26"
+      }
+    ]
+  }
+]

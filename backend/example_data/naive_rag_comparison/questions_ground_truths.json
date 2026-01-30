@@ -1,0 +1,70 @@
+[
+  {
+    "question": "How many people are in the knowledge graph?",
+    "answer": 6
+  },
+  {
+    "question": "Who has both Docker and Kubernetes skills?",
+    "answer": "Michele Lopez"
+  },
+  {
+    "question": "Find people who worked at the same companies.",
+    "answer": "Creative Solutions Llc:\n Casey Herrera and Tiffany Conley\n Eric Warren and Tiffany Conley\n Casey Herrera and Eric Warren\n Tech Innovations Inc.:\n Michele Lopez and Tiffany Conley\n Casey Herrera and Tiffany Conley\n Eric Warren and Tiffany Conley\n Carlos Skinner and Tiffany Conley\n Casey Herrera and Eric Warren\n Carlos Skinner and Eric Warren\n Carlos Skinner and Casey Herrera"
+  },
+  {
+    "question": "Find people who are currently assigned to the same project.",
+    "answer": "Joseph Beard and Michele Lopez are both currently assigned to the same project"
+  },
+  {
+    "question": "Who has cloud computing skills like AWS?",
+    "answer": "The person who has cloud computing skills like AWS is Joseph Beard."
+  },
+  {
+    "question": "What programming languages are most common?",
+    "answer": "The most common programming languages or technologies, each known by 4 people, are C++, Django, and React."
+  },
+  {
+    "question": "What companies have the most former employees in our database?",
+    "answer": "The company with the most former employees in our database is Tech Innovations Inc., which has 5 former employees."
+  },
+  {
+    "question": "List all companies mentioned in the CVs.",
+    "answer": "The companies mentioned in the CVs are Creative Solutions Llc, Tech Innovations Inc., Web Solutions Corp., Nextgen Solutions, Codecrafters Inc., and Tech Innovations Ltd."
+  },
+  {
+    "question": "Find people who studied at Ivy League schools.",
+    "answer": "There are so such people"
+  },
+  {
+    "question": "What universities are most common in our database?",
+    "answer": "There are five universities in the database, each with the same number of people associated with them. These universities are: University Of South Brandon, University Of East Dennisland, University Of West David, University Of Technology, and Deniseborough University. Each university has 1 person associated with it, so they are equally common in the database."
+  },
+  {
+    "question": "Find people that studied at the same university.",
+    "answer": "There are no such people"
+  },
+  {
+    "question": "What cities have the most people?",
+    "answer": "Each city listed has the same number of people, which is 1."
+  },
+  {
+    "question": "Who is located in Deniseborough?",
+    "answer": "The person located in Deniseborough is Joseph Beard"
+  },
+  {
+    "question": "Show all locations in our database.",
+    "answer": "The database contains the following locations: North Jeremiah, West Tracyland, South Brandon, East Dennisland, West David, and Deniseborough."
+  },
+  {
+    "question": "Who has AWS certifications?",
+    "answer": "The individuals who have AWS certifications are Joseph Beard and Casey Herrera."
+  },
+  {
+    "question": "Find all Google Cloud certified people.",
+    "answer": "The people who are Google Cloud certified are Michele Lopez, Eric Warren, and Carlos Skinner."
+  },
+  {
+    "question": "What are the most common certifications?",
+    "answer": "The most common certifications, each held by 3 individuals, are the 'Certified Kubernetes Administrator' and the 'Google Cloud Professional' certifications."
+  }
+]
