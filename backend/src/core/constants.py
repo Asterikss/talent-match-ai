@@ -3,18 +3,15 @@ from pathlib import Path
 RFP_STORAGE_DIR = Path("data/RFP")
 RFP_JSON_FILE = RFP_STORAGE_DIR / "rfps.json"
 
-# Knowledge Graph Schema
 ALLOWED_NODES = [
   "Person",
   "Company",
   "University",
   "Skill",
-  "Technology",
   "Project",
   "Certification",
   "Location",
-  "JobTitle",
-  "Industry",
+  "RFP",
 ]
 
 ALLOWED_RELATIONSHIPS = [
@@ -22,16 +19,12 @@ ALLOWED_RELATIONSHIPS = [
   ("Person", "STUDIED_AT", "University"),
   ("Person", "HAS_SKILL", "Skill"),
   ("Person", "LOCATED_IN", "Location"),
-  ("Person", "HOLDS_POSITION", "JobTitle"),
   ("Person", "WORKED_ON", "Project"),
   ("Person", "EARNED", "Certification"),
-  ("JobTitle", "AT_COMPANY", "Company"),
-  ("Project", "USED_TECHNOLOGY", "Technology"),
-  ("Project", "FOR_COMPANY", "Company"),
-  ("Company", "IN_INDUSTRY", "Industry"),
-  ("Skill", "RELATED_TO", "Technology"),
-  ("Certification", "ISSUED_BY", "Company"),
-  ("University", "LOCATED_IN", "Location"),
+  ("Project", "REQUIRES", "Skill"),
+  ("Person", "ASSIGNED_TO", "Project"),
+  ("RFP", "NEEDS", "Skill"),
+  ("RFP", "LOCATED_IN", "Location"),
 ]
 
-NODE_PROPERTIES = ["start_date", "end_date", "level", "years_experience"]
+NODE_PROPERTIES = ["start_date", "end_date", "proficiency"]
