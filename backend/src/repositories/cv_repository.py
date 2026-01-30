@@ -7,11 +7,11 @@ def upsert_cv(cv: CVStructure):
 
   def merge_person():
     cypher = """
-            MERGE (p:Person {id: $full_name})
-            SET p.name = $full_name,
-                p.email = $email,
-                p.bio = $summary
-            """
+      MERGE (p:Person {id: $full_name})
+      SET p.name = $full_name,
+          p.email = $email,
+          p.bio = $summary
+    """
     graph.query(
       cypher,
       params={
@@ -23,13 +23,13 @@ def upsert_cv(cv: CVStructure):
 
   def merge_skills():
     cypher = """
-            MATCH (p:Person {id: $person_name})
-            MERGE (s:Skill {id: $skill_name})
-            ON CREATE SET s.name = $skill_name
+      MATCH (p:Person {id: $person_name})
+      MERGE (s:Skill {id: $skill_name})
+      ON CREATE SET s.name = $skill_name
 
-            MERGE (p)-[r:HAS_SKILL]->(s)
-            SET r.proficiency = $proficiency
-            """
+      MERGE (p)-[r:HAS_SKILL]->(s)
+      SET r.proficiency = $proficiency
+    """
     for skill in cv.skills:
       graph.query(
         cypher,
@@ -42,12 +42,12 @@ def upsert_cv(cv: CVStructure):
 
   def merge_work_history():
     cypher = """
-            MATCH (p:Person {id: $person_name})
-            MERGE (c:Company {id: $company_name})
-            ON CREATE SET c.name = $company_name
+      MATCH (p:Person {id: $person_name})
+      MERGE (c:Company {id: $company_name})
+      ON CREATE SET c.name = $company_name
 
-            MERGE (p)-[:WORKED_AT]->(c)
-            """
+      MERGE (p)-[:WORKED_AT]->(c)
+    """
     for company_name in cv.worked_for:
       graph.query(
         cypher,
@@ -62,12 +62,12 @@ def upsert_cv(cv: CVStructure):
       return
 
     cypher = """
-            MATCH (p:Person {id: $person_name})
-            MERGE (u:University {id: $uni_name})
-            ON CREATE SET u.name = $uni_name
+      MATCH (p:Person {id: $person_name})
+      MERGE (u:University {id: $uni_name})
+      ON CREATE SET u.name = $uni_name
 
-            MERGE (p)-[:STUDIED_AT]->(u)
-            """
+      MERGE (p)-[:STUDIED_AT]->(u)
+    """
     graph.query(
       cypher,
       params={
@@ -78,12 +78,12 @@ def upsert_cv(cv: CVStructure):
 
   def merge_certifications():
     cypher = """
-            MATCH (p:Person {id: $person_name})
-            MERGE (c:Certification {id: $cert_name})
-            ON CREATE SET c.name = $cert_name
+      MATCH (p:Person {id: $person_name})
+      MERGE (c:Certification {id: $cert_name})
+      ON CREATE SET c.name = $cert_name
 
-            MERGE (p)-[:EARNED]->(c)
-            """
+      MERGE (p)-[:EARNED]->(c)
+    """
     for cert_name in cv.certifications:
       graph.query(
         cypher,
@@ -98,12 +98,12 @@ def upsert_cv(cv: CVStructure):
       return
 
     cypher = """
-            MATCH (p:Person {id: $person_name})
-            MERGE (l:Location {id: $location_name})
-            ON CREATE SET l.name = $location_name
+      MATCH (p:Person {id: $person_name})
+      MERGE (l:Location {id: $location_name})
+      ON CREATE SET l.name = $location_name
 
-            MERGE (p)-[:LOCATED_IN]->(l)
-            """
+      MERGE (p)-[:LOCATED_IN]->(l)
+    """
     graph.query(
       cypher,
       params={

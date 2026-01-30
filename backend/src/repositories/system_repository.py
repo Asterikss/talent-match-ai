@@ -25,12 +25,12 @@ def get_graph_metadata() -> dict[str, Any]:
   node_breakdown = {}
   try:
     query = """
-        MATCH (n)
-        UNWIND labels(n) as label
-        WITH label, count(n) as count
-        WHERE label <> '__Entity__'
-        RETURN label, count ORDER BY label
-        """
+      MATCH (n)
+      UNWIND labels(n) as label
+      WITH label, count(n) as count
+      WHERE label <> '__Entity__'
+      RETURN label, count ORDER BY label
+    """
     results = graph.query(query)
     node_breakdown = {row["label"]: row["count"] for row in results}
   except Exception as e:
@@ -39,10 +39,10 @@ def get_graph_metadata() -> dict[str, Any]:
   relationship_type_breakdown = {}
   try:
     query = """
-        MATCH ()-[r]->()
-        RETURN type(r) as type, count(r) as count
-        ORDER BY count DESC
-        """
+      MATCH ()-[r]->()
+      RETURN type(r) as type, count(r) as count
+      ORDER BY count DESC
+    """
     results = graph.query(query)
     relationship_type_breakdown = {row["type"]: row["count"] for row in results}
   except Exception as e:
@@ -90,9 +90,7 @@ def get_graph_metadata() -> dict[str, Any]:
 
 
 def get_node_sample(label: str, limit: int = 5) -> list[dict[str, Any]]:
-  """
-  Helper to fetch a few sample nodes of a specific type to verify content.
-  """
+  """Helper to fetch a few sample nodes of a specific type to verify content."""
   graph = get_neo4j_graph()
   try:
     # Sanitize label
@@ -107,7 +105,6 @@ def get_node_sample(label: str, limit: int = 5) -> list[dict[str, Any]]:
     for row in result:
       node = row.get("n")
       if node:
-        # properties is usually a dict on the node object
         samples.append(dict(node))
     return samples
   except Exception as e:

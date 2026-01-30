@@ -153,7 +153,9 @@ async def judge_answer(
 async def main() -> None:
   graph_times = []
   rag_times = []
-  ground_truths = load_ground_truths(Path("./example_data/questions.json"))
+  ground_truths = load_ground_truths(
+    Path("./example_data/naive_rag_comparison/questions_ground_truths.json")
+  )
   rag_chain = build_naive_rag()
 
   results = []

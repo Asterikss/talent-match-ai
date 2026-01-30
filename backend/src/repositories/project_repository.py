@@ -71,9 +71,7 @@ def upsert_project(project: ProjectStructure):
 
 
 def get_projects() -> list[ProjectRead]:
-  """
-  Fetches projects with requirements and team members.
-  """
+  """Fetches projects with requirements and team members."""
   cypher = """
     MATCH (p:Project)
 

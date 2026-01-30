@@ -12,7 +12,7 @@ class ProjectStatus(str, Enum):
 
 class _AssignedProgrammer(BaseModel):
   programmer_name: str
-  programmer_id: int  # Keeping ID from JSON, though we match on Name usually
+  programmer_id: int
   assignment_start_date: str | None = None
   assignment_end_date: str | None = None
 

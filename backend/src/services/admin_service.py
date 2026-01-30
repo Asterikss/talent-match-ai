@@ -32,9 +32,7 @@ def reset_database() -> dict:
     indexes = graph.query("SHOW INDEXES")
     for index in indexes:
       name = index.get("name")
-      # Skip system indexes (often start with __ or are LOOKUP indexes)
       if name and not name.startswith("__") and index.get("type") != "LOOKUP":
-        # if name:
         try:
           graph.query(f"DROP INDEX {name}")
         except Exception as e:

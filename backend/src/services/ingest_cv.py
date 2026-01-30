@@ -136,9 +136,7 @@ async def _ingest_via_transformer(pdf_path: Path, text: str) -> dict[str, Any]:
 
 
 def _get_llm_transformer() -> LLMGraphTransformer:
-  """
-  Initializes the LLMGraphTransformer with the specific CV ontology.
-  """
+  """Initializes the LLMGraphTransformer with the specific CV ontology."""
   llm_resulta = get_openai_chat(config.OPENAI_DEFAULT_MODEL)
   if isinstance(llm_resulta, Err):
     raise  # TODO: propagate further

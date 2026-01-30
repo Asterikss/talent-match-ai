@@ -60,9 +60,9 @@ def save_rfp(rfp_data: RFPStructure):
   graph = get_neo4j_graph()
 
   exists_cypher = """
-      MATCH (r:RFP {id: $id})
-      RETURN r.id AS id
-      LIMIT 1
+    MATCH (r:RFP {id: $id})
+    RETURN r.id AS id
+    LIMIT 1
   """
   if graph.query(exists_cypher, params={"id": rfp_data.id}):
     raise ValueError(f"RFP with id '{rfp_data.id}' already exists.")
@@ -77,7 +77,7 @@ def save_rfp(rfp_data: RFPStructure):
         r.deadline = $start_date,
         r.location = $location,
         r.team_size = $team_size
-    """
+  """
 
   graph.query(rfp_cypher, params=rfp_data.model_dump())
 
