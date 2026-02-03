@@ -8,11 +8,11 @@ from api.v1.endpoints.matching import router as matching_router
 from api.v1.endpoints.query import router as query_router
 from core.config import config
 
-rounter = APIRouter(prefix=config.API_V1_STR)
+router = APIRouter(prefix=config.API_V1_STR)
 
-rounter.include_router(entities_router, tags=["Get Entities Operations"])
-rounter.include_router(info_router, tags=["Info Operations"])
-rounter.include_router(ingest_router, tags=["Ingest Operations"])
-rounter.include_router(matching_router, tags=["Matching Operations"])
-rounter.include_router(query_router, tags=["Query Operations"])
-rounter.include_router(admin_router, tags=["Admin Operations"])
+router.include_router(entities_router, tags=["Get Entities Operations"])
+router.include_router(info_router, tags=["Info Operations"])
+router.include_router(ingest_router, tags=["Ingest Operations"])
+router.include_router(matching_router, tags=["Matching Operations"])
+router.include_router(query_router, tags=["Query Operations"])
+router.include_router(admin_router, tags=["Admin Operations"])

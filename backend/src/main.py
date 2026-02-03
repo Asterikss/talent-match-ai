@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from api.v1.master_router import rounter
+from api.v1.master_router import router
 from core.config import config
 
 app = FastAPI(
@@ -9,7 +9,7 @@ app = FastAPI(
   openapi_url=f"{config.API_V1_STR}/openapi.json",
 )
 
-app.include_router(rounter)
+app.include_router(router)
 
 
 if __name__ == "__main__":
