@@ -34,8 +34,8 @@ async def ingest_cv_endpoint(request: IngestRequest) -> dict:
     ) from None
   except ValueError as e:
     raise HTTPException(status_code=400, detail=str(e)) from None
-  except Exception as e:
-    logger.error("CV ingestion error: %s", e)
+  except Exception:
+    logger.exception("CV ingestion error.")
     raise HTTPException(status_code=500, detail="Internal processing error") from None
 
 
@@ -51,8 +51,8 @@ async def ingest_rfp_endpoint(request: IngestRequest) -> dict:
     ) from None
   except ValueError as e:
     raise HTTPException(status_code=400, detail=str(e)) from None
-  except Exception as e:
-    logger.exception("RFP ingestion error")
+  except Exception:
+    logger.exception("RFP ingestion error.")
     raise HTTPException(status_code=500, detail="Internal processing error") from None
 
 
@@ -94,8 +94,8 @@ async def ingest_cv_upload(
     return result
   except ValueError as e:
     raise HTTPException(status_code=400, detail=str(e)) from None
-  except Exception as e:
-    logger.error(f"CV upload ingestion error: {str(e)}")
+  except Exception:
+    logger.exception("CV upload ingestion error.")
     raise HTTPException(status_code=500, detail="Internal processing error") from None
   finally:
     if tmp_path:
@@ -130,8 +130,8 @@ async def ingest_rfp_upload(
     raise HTTPException(
       status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
     ) from None
-  except Exception as e:
-    logger.exception("RFP upload ingestion failed")
+  except Exception:
+    logger.exception("RFP upload ingestion failed.")
     raise HTTPException(
       status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
       detail="Internal processing error",
@@ -161,7 +161,7 @@ async def ingest_projects_upload(
   except ValueError as e:
     raise HTTPException(status_code=400, detail=str(e)) from None
   except Exception as e:
-    logger.error(f"Projects upload ingestion error: {str(e)}")
+    logger.exception("Projects upload ingestion error.")
     raise HTTPException(status_code=500, detail=str(e)) from None
   finally:
     if tmp_path:

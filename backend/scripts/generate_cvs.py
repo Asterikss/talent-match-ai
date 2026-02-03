@@ -177,17 +177,16 @@ def generate_project_records(
 
     num_requirements = random.randint(2, 5)
     required_skills = random.sample(skill_names, num_requirements)
-    requirements = []
-    for skill in required_skills:
-      requirements.append(
-        {
-          "skill_name": skill,
-          "min_proficiency": random.choice(
-            ["Beginner", "Intermediate", "Advanced", "Expert"]
-          ),
-          "is_mandatory": random.choice([True, True, False]),
-        }
-      )
+    requirements = [
+      {
+        "skill_name": skill,
+        "min_proficiency": random.choice(
+          ["Beginner", "Intermediate", "Advanced", "Expert"]
+        ),
+        "is_mandatory": random.choice([True, True, False]),
+      }
+      for skill in required_skills
+    ]
 
     project = {
       "id": f"PRJ-{i + 1:03d}",

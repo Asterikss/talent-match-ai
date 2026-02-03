@@ -18,8 +18,8 @@ async def reset_db_endpoint() -> dict:
   try:
     result = reset_database()
     return result
-  except Exception as e:
-    logger.error(f"Reset failed: {e}")
+  except Exception:
+    logger.exception("Database reset failed")
     raise HTTPException(
       status_code=500,
       detail="Failed to reset database",

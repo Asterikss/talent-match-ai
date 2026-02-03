@@ -19,8 +19,8 @@ def get_graph_metadata() -> dict[str, Any]:
     total_relationships = graph.query("MATCH ()-[r]->() RETURN count(r) as count")[0][
       "count"
     ]
-  except Exception as e:
-    logger.error(f"Failed to get basic counts: {e}")
+  except Exception:
+    logger.exception("Failed to get basic counts.")
     return {"error": "Could not connect to database"}
 
   node_breakdown = {}
@@ -34,8 +34,8 @@ def get_graph_metadata() -> dict[str, Any]:
     """
     results = graph.query(query)
     node_breakdown = {row["label"]: row["count"] for row in results}
-  except Exception as e:
-    logger.warning(f"Failed to get node breakdown: {e}")
+  except Exception:
+    logger.exception("Failed to get node breakdown.")
 
   relationship_type_breakdown = {}
   try:
@@ -46,8 +46,8 @@ def get_graph_metadata() -> dict[str, Any]:
     """
     results = graph.query(query)
     relationship_type_breakdown = {row["type"]: row["count"] for row in results}
-  except Exception as e:
-    logger.warning(f"Failed to get relationship breakdown: {e}")
+  except Exception:
+    logger.exception("Failed to get relationship breakdown.")
 
   # Checks if the specific connections we care about actually exist
   key_patterns = {
@@ -108,6 +108,6 @@ def get_node_sample(label: str, limit: int = 5) -> list[dict[str, Any]]:
       if node:
         samples.append(dict(node))
     return samples
-  except Exception as e:
-    logger.error(f"Failed to get sample for {label}: {e}")
+  except Exception:
+    logger.exception("Failed to get sample for %s.", label)
     return []

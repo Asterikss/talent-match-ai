@@ -34,8 +34,8 @@ async def process_projects_json(path: Path) -> dict[str, Any]:
         processed_count += 1
 
       except Exception as e:
-        logger.error(f"Failed to process project {item.get('id', 'unknown')}: {e}")
-        errors.append(f"ID {item.get('id')}: {str(e)}")
+        logger.exception("Failed to process project - %s", item.get("id", "unknown"))
+        errors.append("ID %s : %s" % (item.get("id", "unknown"), e))
 
     return {
       "status": "success",
@@ -45,5 +45,5 @@ async def process_projects_json(path: Path) -> dict[str, Any]:
     }
 
   except Exception as e:
-    logger.error(f"Global project ingestion failed: {e}")
+    logger.exception("Global project ingestion failed.")
     raise RuntimeError(str(e)) from None

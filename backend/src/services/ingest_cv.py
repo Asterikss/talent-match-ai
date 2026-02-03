@@ -96,7 +96,7 @@ async def _ingest_via_structured_output(pdf_path: Path, text: str) -> dict[str, 
     }
 
   except Exception as e:
-    logger.error(f"Structured ingestion failed for {pdf_path.name}: {e}")
+    logger.exception("Structured ingestion failed for %s.", pdf_path.name)
     return {"status": "error", "message": str(e)}
 
 
@@ -129,7 +129,7 @@ async def _ingest_via_transformer(pdf_path: Path, text: str) -> dict[str, Any]:
       "relationships_created": len(graph_documents[0].relationships),
     }
   except Exception as e:
-    logger.error(f"Transformer ingestion failed: {e}")
+    logger.exception("LLMGraphTransformer ingestion failed.")
     return {"status": "error", "message": str(e)}
 
 

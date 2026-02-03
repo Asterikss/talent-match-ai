@@ -62,25 +62,23 @@ def generate_rfps_data_dicts(num_rfps: int, fake: Faker) -> list[dict]:
     start_date = fake.date_between(start_date="+1m", end_date="+6m")
 
     num_requirements = random.randint(2, 3)
-    requirements = []
     required_skills = random.sample(skill_names, num_requirements)
-
-    for skill in required_skills:
-      requirements.append(
-        {
-          "skill_name": skill,
-          "min_proficiency": random.choice(["Intermediate", "Advanced", "Expert"]),
-          "is_mandatory": random.choice([True, True, False]),
-          "preferred_certifications": random.sample(
-            [
-              "AWS Certified Solutions Architect",
-              "Google Cloud Professional",
-              "Certified Kubernetes Administrator",
-            ],
-            random.randint(0, 2),
-          ),
-        }
-      )
+    requirements = [
+      {
+        "skill_name": skill,
+        "min_proficiency": random.choice(["Intermediate", "Advanced", "Expert"]),
+        "is_mandatory": random.choice([True, True, False]),
+        "preferred_certifications": random.sample(
+          [
+            "AWS Certified Solutions Architect",
+            "Google Cloud Professional",
+            "Certified Kubernetes Administrator",
+          ],
+          random.randint(0, 2),
+        ),
+      }
+      for skill in required_skills
+    ]
 
     rfp = {
       "id": f"RFP-{i + 1:03d}",

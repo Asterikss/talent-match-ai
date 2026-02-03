@@ -51,7 +51,7 @@ async def process_query(question: str) -> dict[str, Any]:
     }
 
   except Exception as e:
-    logger.error(f"Graph QA failed: {e}")
+    logger.exception("Graph QA failed.")
     return {
       "question": question,
       "answer": "I encountered an error processing your query.",

@@ -104,5 +104,7 @@ def save_rfp(rfp_data: RFPStructure) -> None:
     )
 
   logger.info(
-    f"Saved RFP {rfp_data.id} to Neo4j with {len(rfp_data.requirements)} skill requirements"
+    "Saved RFP %s to Neo4j with %s skill requirements",
+    rfp_data.id,
+    len(rfp_data.requirements),
   )

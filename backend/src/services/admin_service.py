@@ -25,8 +25,8 @@ def reset_database() -> dict:
       if name:
         try:
           graph.query(f"DROP CONSTRAINT {name}")
-        except Exception as e:
-          logger.warning(f"Could not drop constraint {name}: {e}")
+        except Exception:
+          logger.exception("Could not drop constraint: %s.", name)
 
     logger.info("Dropping all indexes...")
     indexes = graph.query("SHOW INDEXES")
@@ -35,8 +35,8 @@ def reset_database() -> dict:
       if name and not name.startswith("__") and index.get("type") != "LOOKUP":
         try:
           graph.query(f"DROP INDEX {name}")
-        except Exception as e:
-          logger.warning(f"Could not drop index {name}: {e}")
+        except Exception:
+          logger.exception("Could not drop index: %s.", name)
 
     # Verification
     node_count = graph.query("MATCH (n) RETURN count(n) as count")[0]["count"]
@@ -51,7 +51,7 @@ def reset_database() -> dict:
       }
 
   except Exception as e:
-    logger.error(f"Error during database reset: {e}")
+    logger.exception("Error during database reset.")
     # Fallback basic cleanup
     graph.query("MATCH (n) DETACH DELETE n")
     raise RuntimeError(f"Database reset failed: {str(e)}") from None

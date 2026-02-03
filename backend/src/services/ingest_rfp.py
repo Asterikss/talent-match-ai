@@ -29,7 +29,7 @@ async def _extract_rfp_data(text: str) -> RFPStructure:
       "Other formatting should be standard. "
       f"Infer missing dates or details logically if implied.\n\nText:\n{text}"
     )
-    return result
+    return result  # TODO:
   except Exception:
     logger.exception("LLM Extraction failed")
     raise ValueError("Failed to parse RFP structure from text") from None
@@ -50,7 +50,7 @@ def _save_to_json_file(rfp_data: RFPStructure) -> None:
       with open(RFP_JSON_FILE, "r") as f:
         current_data = json.load(f)
     except json.JSONDecodeError:
-      logger.warning("rfps.json was corrupted, starting fresh.")
+      logger.exception("rfps.json was corrupted, starting fresh.")
       current_data = []
 
   rfp_dict = rfp_data.model_dump()
@@ -82,8 +82,8 @@ async def _process_rfp(pdf_path: Path) -> dict:
 
   try:
     save_rfp(rfp_structure)
-  except Exception as e:
-    logger.error("Neo4j ingestion failed: %s", e)
+  except Exception:
+    logger.exception("Neo4j ingestion failed.")
     return {
       "status": "partial_success",
       "message": "Saved to JSON but failed to sync to Graph",
