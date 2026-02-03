@@ -169,7 +169,7 @@ def generate_rfps(
   openai_clinet: OpenAI,
   generator_model: str,
   faker: Faker,
-):
+) -> None:
   print(f"Generating {num_rfps} RFP records and PDFs...")
   rfps: list[dict] = generate_rfps_data_dicts(num_rfps, faker)
 
@@ -186,7 +186,7 @@ def generate_rfps(
     generated_rfp_files.append(file_path)
 
 
-def main():
+def main() -> None:
   num_rfps = 3
   rfps_dir = Path("data/RFP")
   generator_model = "gpt-4o-mini"

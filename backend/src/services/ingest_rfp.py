@@ -37,7 +37,7 @@ async def _extract_rfp_data(text: str) -> RFPStructure:
     raise ValueError("Failed to parse RFP structure from text")
 
 
-def _save_to_json_file(rfp_data: RFPStructure):
+def _save_to_json_file(rfp_data: RFPStructure) -> None:
   """
   Adds the new RFP to the global rfps.json file. Updates if already exists.
   Handles creation if the file doesn't exist.

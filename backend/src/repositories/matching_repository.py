@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from shared_types.matching_types import CandidateMatch, MatchResponse
 
@@ -8,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class MatchingRepository:
-  def __init__(self):
+  def __init__(self) -> None:
     self.graph = get_neo4j_graph()
 
   def find_candidates(self, rfp_id: str, max_delay_months: int = 1) -> MatchResponse:
@@ -186,7 +187,7 @@ class MatchingRepository:
 
     return response
 
-  def convert_rfp_to_project(self, rfp_id: str, programmer_ids: list[str]):
+  def convert_rfp_to_project(self, rfp_id: str, programmer_ids: list[str]) -> str:
     """
     Transactional logic to:
     1. Create Project from RFP
@@ -234,7 +235,7 @@ class MatchingRepository:
         RETURN p.id as new_project_id
         """
 
-    result = self.graph.query(
+    result: list[dict[str, Any]] = self.graph.query(
       cypher, params={"rfp_id": rfp_id, "programmer_ids": programmer_ids}
     )
 

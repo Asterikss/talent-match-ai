@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
@@ -19,10 +21,8 @@ class QueryResponse(BaseModel):
 
 
 @router.post("/", response_model=QueryResponse)
-async def query_knowledge_graph(request: QueryRequest):
-  """
-  Ask a natural language question to the Knowledge Graph.
-  """
+async def query_knowledge_graph(request: QueryRequest) -> dict[str, Any]:
+  """Ask a natural language question to the Knowledge Graph."""
   if not request.question.strip():
     raise HTTPException(status_code=400, detail="Question cannot be empty")
 
@@ -31,8 +31,6 @@ async def query_knowledge_graph(request: QueryRequest):
 
 
 @router.get("/examples", response_model=dict[str, list[str]])
-async def get_example_queries():
-  """
-  Get a list of suggested queries to help the user.
-  """
+async def get_example_queries() -> dict[str, list[str]]:
+  """Get a list of suggested queries to help the user."""
   return query_service.get_example_queries_list()

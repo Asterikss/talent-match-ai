@@ -2,10 +2,10 @@ from core.models.cv_models import CVStructure
 from services.neo4j_service import get_neo4j_graph
 
 
-def upsert_cv(cv: CVStructure):
+def upsert_cv(cv: CVStructure) -> None:
   graph = get_neo4j_graph()
 
-  def merge_person():
+  def merge_person() -> None:
     cypher = """
       MERGE (p:Person {id: $full_name})
       SET p.name = $full_name,
@@ -21,7 +21,7 @@ def upsert_cv(cv: CVStructure):
       },
     )
 
-  def merge_skills():
+  def merge_skills() -> None:
     cypher = """
       MATCH (p:Person {id: $person_name})
       MERGE (s:Skill {id: $skill_name})
@@ -40,7 +40,7 @@ def upsert_cv(cv: CVStructure):
         },
       )
 
-  def merge_work_history():
+  def merge_work_history() -> None:
     cypher = """
       MATCH (p:Person {id: $person_name})
       MERGE (c:Company {id: $company_name})
@@ -57,7 +57,7 @@ def upsert_cv(cv: CVStructure):
         },
       )
 
-  def merge_education():
+  def merge_education() -> None:
     if not cv.university_name:
       return
 
@@ -76,7 +76,7 @@ def upsert_cv(cv: CVStructure):
       },
     )
 
-  def merge_certifications():
+  def merge_certifications() -> None:
     cypher = """
       MATCH (p:Person {id: $person_name})
       MERGE (c:Certification {id: $cert_name})
@@ -93,7 +93,7 @@ def upsert_cv(cv: CVStructure):
         },
       )
 
-  def merge_location():
+  def merge_location() -> None:
     if not cv.location:
       return
 

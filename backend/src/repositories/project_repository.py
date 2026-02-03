@@ -4,7 +4,7 @@ from core.models.project_models import ProjectStatus, ProjectStructure
 from services.neo4j_service import get_neo4j_graph
 
 
-def upsert_project(project: ProjectStructure):
+def upsert_project(project: ProjectStructure) -> None:
   """Creates/Updates a Project node and its relationships (Skills, People)."""
   graph = get_neo4j_graph()
 

@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import APIRouter, HTTPException, Query
 from shared_types.matching_types import MatchResponse
 from shared_types.project_types import ProjectAssignmentRequest
@@ -12,7 +14,7 @@ repo = MatchingRepository()
 async def find_matches(
   rfp_id: str,
   threshold_months: int = Query(1, description="Months to consider 'Available Soon'"),
-):
+) -> MatchResponse:
   """
   Run the matching algorithm for a specific RFP.
   Returns candidates categorized by:
@@ -27,7 +29,9 @@ async def find_matches(
 
 
 @router.post("/{rfp_id}/confirm")
-async def confirm_assignment(rfp_id: str, request: ProjectAssignmentRequest):
+async def confirm_assignment(
+  rfp_id: str, request: ProjectAssignmentRequest
+) -> dict[str, Any]:
   """
   Finalize the RFP.
   1. Converts RFP to a Project.

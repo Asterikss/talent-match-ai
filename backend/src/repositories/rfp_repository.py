@@ -52,7 +52,7 @@ def get_next_rfp_id() -> str:
   return f"RFP-{num:03d}"
 
 
-def save_rfp(rfp_data: RFPStructure):
+def save_rfp(rfp_data: RFPStructure) -> None:
   """
   Creates the RFP node and connects it to Skill nodes using the NEEDS relationship.
   Fails if the RFP node already exists.

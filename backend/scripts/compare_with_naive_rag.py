@@ -5,7 +5,7 @@ import textwrap
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any, Sequence
 
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import Chroma
@@ -19,6 +19,10 @@ from result import Err
 
 from src.services.openai_service import get_openai_chat
 from src.services.query_service import process_query
+
+if TYPE_CHECKING:
+  from langchain_core.documents import Document
+  from langchain_core.runnables import Runnable
 
 
 class JudgeResult(BaseModel):
@@ -64,7 +68,7 @@ def load_ground_truths(path: Path) -> list[dict[str, Any]]:
     return json.load(f)
 
 
-def build_naive_rag():
+def build_naive_rag() -> Runnable[object, str]:
   pdf_paths = []
   for folder in ["data/programmers", "data/RFP"]:
     pdf_paths.extend(Path(folder).glob("*.pdf"))
@@ -107,7 +111,7 @@ def build_naive_rag():
 
   llm = ChatOpenAI(temperature=0)
 
-  def format_docs(docs):
+  def format_docs(docs: Sequence[Document]) -> str:
     return "\n\n".join(
       f"[Document {i + 1}]\n{doc.page_content}" for i, doc in enumerate(docs)
     )

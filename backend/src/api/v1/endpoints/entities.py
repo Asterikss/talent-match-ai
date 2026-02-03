@@ -15,7 +15,7 @@ async def get_programmers(
   status: Literal["available", "assigned"] | None = Query(
     None, description="Filter by assignment status"
   ),
-):
+) -> list[ProgrammerRead]:
   """
   Get all programmers.
   Use ?status=available to find people ready for new projects.
@@ -27,7 +27,7 @@ async def get_programmers(
 
 
 @router.get("/projects", response_model=list[ProjectRead])
-async def get_projects():
+async def get_projects() -> list[ProjectRead]:
   """
   Get all projects (historical and active) with their team and tech stack.
   """
@@ -38,7 +38,7 @@ async def get_projects():
 
 
 @router.get("/rfps", response_model=list[RFPRead])
-async def get_rfps():
+async def get_rfps() -> list[RFPRead]:
   """
   Get all active RFPs and their specific skill requirements.
   """

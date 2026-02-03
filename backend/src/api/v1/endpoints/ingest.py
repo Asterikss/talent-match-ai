@@ -1,7 +1,7 @@
 import logging
 import tempfile
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
 from pydantic import BaseModel
@@ -23,7 +23,7 @@ class IngestRequest(BaseModel):
 
 
 @router.post("/cv")
-async def ingest_cv_endpoint(request: IngestRequest):
+async def ingest_cv_endpoint(request: IngestRequest) -> dict:
   """Ingest a single CV PDF or every PDF inside a directory (non-recursive)."""
   try:
     results: list[dict] = await ingest_cv(Path(request.file_path))
@@ -38,7 +38,7 @@ async def ingest_cv_endpoint(request: IngestRequest):
 
 
 @router.post("/rfp")
-async def ingest_rfp_endpoint(request: IngestRequest):
+async def ingest_rfp_endpoint(request: IngestRequest) -> dict:
   """Ingest a single RFP PDF or every RFP PDF inside a directory."""
   try:
     results: list[dict] = await ingest_rfp(Path(request.file_path))
@@ -53,7 +53,7 @@ async def ingest_rfp_endpoint(request: IngestRequest):
 
 
 @router.post("/projects")
-async def ingest_projects_endpoint(request: IngestRequest):
+async def ingest_projects_endpoint(request: IngestRequest) -> dict:
   """
   Trigger the ingestion of the projects file into Neo4j.
   This parses the file and creates Project nodes, Requirement links, and Assignments.
@@ -72,7 +72,7 @@ async def ingest_projects_endpoint(request: IngestRequest):
 
 
 @router.post("/cv/upload")
-async def ingest_cv_upload(file: UploadFile = File(...)):
+async def ingest_cv_upload(file: UploadFile = File(...)) -> list[dict[str, Any]]:
   """Upload and ingest a CV PDF."""
   if not (file.filename and file.filename.lower().endswith(".pdf")):
     raise HTTPException(status_code=400, detail="File must be a PDF")
@@ -136,7 +136,7 @@ async def ingest_rfp_upload(
 
 
 @router.post("/projects/upload")
-async def ingest_projects_upload(file: UploadFile = File(...)):
+async def ingest_projects_upload(file: UploadFile = File(...)) -> dict[str, Any]:
   """Upload and ingest a projects JSON file."""
   if not (file.filename and file.filename.lower().endswith(".json")):
     raise HTTPException(status_code=400, detail="File must be a JSON file")

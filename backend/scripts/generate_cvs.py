@@ -218,7 +218,9 @@ def assign_programmers_to_projects(
   # Create a list to track programmer availability periods
   programmer_assignments = {p["id"]: [] for p in programmer_profiles}
 
-  def has_skill_requirement(programmer, skill_name, min_proficiency):
+  def has_skill_requirement(
+    programmer: dict, skill_name: str, min_proficiency: str
+  ) -> bool:
     proficiency_levels = {"Beginner": 1, "Intermediate": 2, "Advanced": 3, "Expert": 4}
     min_level = proficiency_levels[min_proficiency]
 
@@ -228,7 +230,7 @@ def assign_programmers_to_projects(
         return programmer_level >= min_level
     return False
 
-  def is_available(programmer_id, start_date, end_date):
+  def is_available(programmer_id: dict, start_date: str, end_date: str) -> bool:
     assignments = programmer_assignments[programmer_id]
     project_start = datetime.fromisoformat(start_date).date()
     project_end = datetime.fromisoformat(end_date).date() if end_date else None

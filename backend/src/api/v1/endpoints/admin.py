@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 @router.delete("/db/reset", status_code=status.HTTP_200_OK)
-async def reset_db_endpoint():
+async def reset_db_endpoint() -> dict:
   """
   DANGER: Completely wipes the Neo4j database.
   Deletes all nodes, relationships, indexes, and constraints.
