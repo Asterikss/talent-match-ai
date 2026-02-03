@@ -188,13 +188,12 @@ class MatchingRepository:
     return response
 
   def convert_rfp_to_project(self, rfp_id: str, programmer_ids: list[str]) -> str:
-    """
-    Transactional logic to:
+    """Convert an RFP to a project.
+
     1. Create Project from RFP
     2. Assign Programmers
     3. Delete RFP
     """
-
     cypher = """
         MATCH (r:RFP {id: $rfp_id})
 

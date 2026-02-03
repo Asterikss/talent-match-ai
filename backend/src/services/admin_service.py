@@ -6,8 +6,8 @@ logger = logging.getLogger(__name__)
 
 
 def reset_database() -> dict:
-  """
-  Performs a complete cleanup of the Neo4j database:
+  """Perform a complete cleanup of the Neo4j database.
+
   1. Deletes all nodes and relationships.
   2. Drops all constraints.
   3. Drops all indexes (except system indexes).

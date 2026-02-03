@@ -19,7 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 async def ingest_cv(path: Path) -> list[dict[str, Any]]:
-  """
+  """Ingest a CV.
+
   Accepts a single file or a directory. Non-recursive. Delegates to specific
   processing logic based on the config (USE_LANGCHAIN_LLM_GRAPH_TRANSFORMER).
   """
@@ -63,10 +64,7 @@ async def _process_single_cv(pdf_path: Path) -> dict[str, Any]:
 
 
 async def _ingest_via_structured_output(pdf_path: Path, text: str) -> dict[str, Any]:
-  """
-  Uses OpenAI Structured Output + Pydantic + Custom Repository.
-  Adheres strictly to the CVStructure model.
-  """
+  """Ingest a CV via structured output."""
   try:
     llm_result = get_openai_chat(temperature=0)
     if isinstance(llm_result, Err):
@@ -103,7 +101,7 @@ async def _ingest_via_structured_output(pdf_path: Path, text: str) -> dict[str, 
 
 
 async def _ingest_via_transformer(pdf_path: Path, text: str) -> dict[str, Any]:
-  """Uses LangChain LLMGraphTransformer. Creates Document nodes."""
+  """Ingest a CV via LangChain's LLMGraphTransformer, which creates Document nodes."""
   document = Document(
     page_content=text,
     metadata={"source": str(pdf_path), "type": "cv", "filename": pdf_path.name},
@@ -136,7 +134,7 @@ async def _ingest_via_transformer(pdf_path: Path, text: str) -> dict[str, Any]:
 
 
 def _get_llm_transformer() -> LLMGraphTransformer:
-  """Initializes the LLMGraphTransformer with the specific CV ontology."""
+  """Initialize the LLMGraphTransformer with the specific CV ontology."""
   llm_resulta = get_openai_chat(config.OPENAI_DEFAULT_MODEL)
   if isinstance(llm_resulta, Err):
     raise  # TODO: propagate further

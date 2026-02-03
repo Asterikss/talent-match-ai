@@ -31,7 +31,7 @@ def _get_qa_chain() -> GraphCypherQAChain:
 
 
 async def process_query(question: str) -> dict[str, Any]:
-  """Executes a natural language query against the Knowledge Graph."""
+  """Execute a natural language query against the Knowledge Graph."""
   try:
     chain = _get_qa_chain()
 
@@ -61,7 +61,7 @@ async def process_query(question: str) -> dict[str, Any]:
 
 
 def get_example_queries_list() -> dict[str, list[str]]:
-  """Returns a categorized list of example queries for the frontend."""
+  """Return a categorized list of example queries for the frontend."""
   return {
     "Basic Information": [
       "How many people are in the knowledge graph?",

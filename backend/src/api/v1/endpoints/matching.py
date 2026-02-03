@@ -15,8 +15,8 @@ async def find_matches(
   rfp_id: str,
   threshold_months: int = Query(1, description="Months to consider 'Available Soon'"),
 ) -> MatchResponse:
-  """
-  Run the matching algorithm for a specific RFP.
+  """Run the matching algorithm for a specific RFP.
+
   Returns candidates categorized by:
   1. Perfect Matches (Skills + Available Now)
   2. Future Matches (Skills + Available within X months)
@@ -32,8 +32,8 @@ async def find_matches(
 async def confirm_assignment(
   rfp_id: str, request: ProjectAssignmentRequest
 ) -> dict[str, Any]:
-  """
-  Finalize the RFP.
+  """Finalize the RFP.
+
   1. Converts RFP to a Project.
   2. Assigns the selected programmers.
   3. Deletes the RFP from search.

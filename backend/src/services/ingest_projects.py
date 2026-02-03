@@ -12,9 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 async def process_projects_json(path: Path) -> dict[str, Any]:
-  """
-  Reads projects.json, validates it against Pydantic models,
-  and persists to Neo4j via ProjectRepository.
+  """Read projects.json and persist it to Neo4j.
+
+  Validates the file against Pydantic models via ProjectRepository.
   """
   try:
     if not path.exists():

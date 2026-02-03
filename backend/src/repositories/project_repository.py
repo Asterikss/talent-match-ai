@@ -5,7 +5,7 @@ from services.neo4j_service import get_neo4j_graph
 
 
 def upsert_project(project: ProjectStructure) -> None:
-  """Creates/Updates a Project node and its relationships (Skills, People)."""
+  """Upsert a Project node and its relationships (Skills, People)."""
   graph = get_neo4j_graph()
 
   # Merge Project Node
@@ -71,7 +71,7 @@ def upsert_project(project: ProjectStructure) -> None:
 
 
 def get_projects() -> list[ProjectRead]:
-  """Fetches projects with requirements and team members."""
+  """Fetch projects with requirements and team members."""
   cypher = """
     MATCH (p:Project)
 

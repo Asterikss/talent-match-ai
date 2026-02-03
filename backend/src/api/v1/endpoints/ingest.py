@@ -58,8 +58,8 @@ async def ingest_rfp_endpoint(request: IngestRequest) -> dict:
 
 @router.post("/projects")
 async def ingest_projects_endpoint(request: IngestRequest) -> dict:
-  """
-  Trigger the ingestion of the projects file into Neo4j.
+  """Trigger the ingestion of the projects file into Neo4j.
+
   This parses the file and creates Project nodes, Requirement links, and Assignments.
   """
   try:

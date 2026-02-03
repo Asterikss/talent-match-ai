@@ -15,9 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 async def _extract_rfp_data(text: str) -> RFPStructure:
-  """
-  Uses OpenAI Structured Output to parse raw text into the RFP Pydantic model.
-  """
+  """Use OpenAI Structured Output to parse raw text into the RFP Pydantic model."""
   openai_chat_result = get_openai_chat(temperature=0)
   if isinstance(openai_chat_result, Err):
     raise  # TODO: propagate
@@ -38,9 +36,9 @@ async def _extract_rfp_data(text: str) -> RFPStructure:
 
 
 def _save_to_json_file(rfp_data: RFPStructure) -> None:
-  """
-  Adds the new RFP to the global rfps.json file. Updates if already exists.
-  Handles creation if the file doesn't exist.
+  """Upsert and RFP to the global rfps.json file.
+
+  Handles the file creation if the file doesn't exist.
   """
   if not RFP_STORAGE_DIR.exists():
     RFP_STORAGE_DIR.mkdir(parents=True, exist_ok=True)
@@ -100,7 +98,7 @@ async def _process_rfp(pdf_path: Path) -> dict:
 
 
 async def ingest_rfp(path: Path) -> list[dict]:
-  """Main pipeline: PDF -> Text -> Pydantic -> JSON and Neo4j"""
+  """Ingest an RFP: PDF -> Text -> Pydantic -> JSON and Neo4j."""
   if not path.exists():
     raise FileNotFoundError(f"File not found: {path}")
 

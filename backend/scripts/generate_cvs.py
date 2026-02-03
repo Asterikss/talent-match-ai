@@ -214,7 +214,6 @@ def assign_programmers_to_projects(
   projects: list[dict], programmer_profiles: list[dict]
 ) -> list[dict]:
   """Assign programmers to projects based on skill matching, leaving some unassigned."""
-
   # Create a list to track programmer availability periods
   programmer_assignments = {p["id"]: [] for p in programmer_profiles}
 

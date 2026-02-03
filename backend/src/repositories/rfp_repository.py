@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_rfps() -> list[RFPRead]:
-  """Fetches RFPs with needed skills."""
+  """Fetch RFPs with needed skills."""
   cypher = """
     MATCH (r:RFP)
 
@@ -53,8 +53,8 @@ def get_next_rfp_id() -> str:
 
 
 def save_rfp(rfp_data: RFPStructure) -> None:
-  """
-  Creates the RFP node and connects it to Skill nodes using the NEEDS relationship.
+  """Create the RFP node and connects it to Skill nodes using the NEEDS relationship.
+
   Fails if the RFP node already exists.
   """
   graph = get_neo4j_graph()

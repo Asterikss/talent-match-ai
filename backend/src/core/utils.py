@@ -7,8 +7,8 @@ logger = logging.getLogger(__name__)
 
 
 def extract_text_from_pdf(pdf_path: Path) -> str:
-  """
-  Extracts text content from a PDF file using unstructured.
+  """Extract text content from a PDF file using unstructured.
+
   Shared utility for CVs and RFPs.
   """
   try:

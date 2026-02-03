@@ -7,8 +7,9 @@ logger = logging.getLogger(__name__)
 
 
 def get_graph_metadata() -> dict[str, Any]:
-  """
-  Retrieves comprehensive statistics, schema details, and validation warnings
+  """Retrieve graph metadata.
+
+  Returns comprehensive statistics, schema details, and validation warnings
   about the current state of the Knowledge Graph.
   """
   graph = get_neo4j_graph()
@@ -90,7 +91,7 @@ def get_graph_metadata() -> dict[str, Any]:
 
 
 def get_node_sample(label: str, limit: int = 5) -> list[dict[str, Any]]:
-  """Helper to fetch a few sample nodes of a specific type to verify content."""
+  """Fetch a few sample nodes of a specific type to verify content."""
   graph = get_neo4j_graph()
   try:
     # Sanitize label
