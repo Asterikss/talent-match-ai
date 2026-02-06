@@ -1,5 +1,5 @@
 {
-  description = "Talent Match AI";
+  description = "Staffing GraphRAG";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -41,7 +41,7 @@
           ];
 
           # Manylinux-compatible runtime set (useful for binary wheels)
-          manylinuxLibs = pkgs.pythonManylinuxPackages.manylinux2014;
+          manylinuxLibs = pkgs.pythonManylinuxPackages.manylinux1;
         in
         {
           default = pkgs.mkShell {
@@ -51,17 +51,14 @@
             ];
 
             env = lib.optionalAttrs pkgs.stdenv.isLinux {
-              LD_LIBRARY_PATH = lib.makeLibraryPath (weasyLibs ++ openCVLibs ++ manylinuxLibs);
+              LD_LIBRARY_PATH = lib.makeLibraryPath (weasyLibs ++ openCVLibs ++ [ pkgs.stdenv.cc.cc.lib ]);
             };
 
             shellHook = ''
-              export PYTHONPATH="src"
               cd backend
               uv sync
               . .venv/bin/activate
               cd ..
-              [[ -f backend/.env ]] && set -a && source backend/.env && set +a
-              [[ $DEVSHELL_SHELL ]] && exec "$DEVSHELL_SHELL"
             '';
           };
 
@@ -72,16 +69,13 @@
             ];
 
             env = lib.optionalAttrs pkgs.stdenv.isLinux {
-              LD_LIBRARY_PATH = lib.makeLibraryPath (weasyLibs ++ openCVLibs ++ manylinuxLibs);
+              LD_LIBRARY_PATH = lib.makeLibraryPath (weasyLibs ++ openCVLibs ++ [ pkgs.stdenv.cc.cc.lib ]);
             };
 
             shellHook = ''
-              export PYTHONPATH="src"
               cd backend
               uv sync
               . .venv/bin/activate
-              [[ -f .env ]] && set -a && source .env && set +a
-              [[ $DEVSHELL_SHELL ]] && exec "$DEVSHELL_SHELL"
             '';
           };
 
@@ -92,15 +86,13 @@
             ];
 
             env = lib.optionalAttrs pkgs.stdenv.isLinux {
-              LD_LIBRARY_PATH = lib.makeLibraryPath (manylinuxLibs);
+              LD_LIBRARY_PATH = lib.makeLibraryPath ([ pkgs.stdenv.cc.cc.lib ]);
             };
 
             shellHook = ''
               cd client
               uv sync
               . .venv/bin/activate
-              [[ -f .env ]] && set -a && source .env && set +a
-              [[ $DEVSHELL_SHELL ]] && exec "$DEVSHELL_SHELL"
             '';
           };
 
@@ -111,15 +103,13 @@
             ];
 
             env = lib.optionalAttrs pkgs.stdenv.isLinux {
-              LD_LIBRARY_PATH = lib.makeLibraryPath (manylinuxLibs);
+              LD_LIBRARY_PATH = lib.makeLibraryPath ([ pkgs.stdenv.cc.cc.lib ]);
             };
 
             shellHook = ''
               cd shared
               uv sync
               . .venv/bin/activate
-              [[ -f .env ]] && set -a && source .env && set +a
-              [[ $DEVSHELL_SHELL ]] && exec "$DEVSHELL_SHELL"
             '';
           };
         }
