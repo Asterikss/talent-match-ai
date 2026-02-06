@@ -279,7 +279,7 @@ def render_confirmation_section(rfp: dict):
     st.info("Select programmers above to assign them to this project.")
     return
 
-  st.markdown(f"### 📝 Assignment Summary")
+  st.markdown("### 📝 Assignment Summary")
   st.markdown(f"**Selected {len(selected)} programmer(s):**")
 
   results = st.session_state.match_results

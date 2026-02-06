@@ -18,8 +18,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydantic import BaseModel, Field
 from result import Err
 
-from src.services.openai_service import get_openai_chat
-from src.services.query_service import process_query
+from staffing_graphrag.services.openai_service import get_openai_chat
+from staffing_graphrag.services.query_service import process_query
 
 if TYPE_CHECKING:
   from langchain_core.documents import Document

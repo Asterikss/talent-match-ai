@@ -260,7 +260,6 @@ def assign_programmers_to_projects(  # noqa: PLR0915
     if random.random() > assignment_probability:
       continue  # Skip this project to leave programmers available
 
-    assigned_count = 0
     max_assignments = min(project["team_size"], len(programmer_profiles))
 
     # Get mandatory requirements
@@ -352,7 +351,6 @@ def assign_programmers_to_projects(  # noqa: PLR0915
 
       project["assigned_programmers"].append(assignment)
       programmer_assignments[programmer["id"]].append(assignment)
-      assigned_count += 1
 
   return projects
 
