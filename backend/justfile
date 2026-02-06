@@ -1,0 +1,90 @@
+set dotenv-load
+
+
+PORT := env("SERVER_PORT", "8032")
+ARGS_SERVE := env("_UV_RUN_ARGS_SERVE", "")
+COMPOSE := "docker compose -f ../docker-compose.yml"
+NEO4J_HTTP := "http://localhost:7474"
+
+@_:
+  just --list
+
+# Launch database, run development server and open it in the browser
+[group('run')]
+up: db-up db-wait serve browser
+
+# Run development server
+[group('run')]
+serve:
+  PYTHONPATH=src/staffing_graphrag uv run {{ ARGS_SERVE }} -m fastapi dev src/staffing_graphrag/main.py --port {{ PORT }}
+
+# Open development server in web browser
+[group('run')]
+browser:
+  uv run -m webbrowser -t http://127.0.0.1:{{ PORT }}
+
+
+
+# Launch the database
+[group('infra')]
+db-up:
+  {{ COMPOSE }} up -d neo4j
+
+
+# Shut down the database
+[group('infra')]
+db-down:
+  {{ COMPOSE }} down
+
+# Get database logs
+[group('infra')]
+db-logs:
+  {{ COMPOSE }} logs -f neo4j
+
+# Wait for the database to be healthy
+[group('infra')]
+db-wait:
+  @echo "Waiting for Neo4j to be ready at {{ NEO4J_HTTP }} ..."
+  @until curl -fs {{ NEO4J_HTTP }} >/dev/null; do \
+    sleep 4; \
+  done
+  @echo "Neo4j is ready"
+
+
+
+# Update dependencies
+[group('lifecycle')]
+update:
+    uv sync --upgrade
+
+# Ensure project virtualenv is up to date
+[group('lifecycle')]
+install:
+    uv sync
+
+# Remove temporary files
+[group('lifecycle')]
+clean:
+    rm -rf .venv .pytest_cache .mypy_cache .ruff_cache .coverage htmlcov
+    find . -type d -name "__pycache__" -exec rm -r {} +
+
+# Recreate project virtualenv from nothing
+[group('lifecycle')]
+fresh: clean install
+
+
+
+# Run linters
+[group('qa')]
+lint:
+    uvx ruff check
+    uvx ruff format
+
+# Check types
+[group('qa')]
+typing:
+    uvx ty check --python .venv src
+
+# Perform all checks
+[group('qa')]
+check-all: lint typing
