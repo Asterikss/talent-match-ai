@@ -1,5 +1,5 @@
 [project]
-name = "Staffing GraphRAG"
+name = "staffing-graphrag"
 version = "0.1.0"
 authors = [ ]
 requires-python = "~=3.12.11"
