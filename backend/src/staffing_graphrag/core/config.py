@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -22,7 +24,9 @@ class Config(BaseSettings):
 
   USE_LANGCHAIN_LLM_GRAPH_TRANSFORMER: bool = False
 
-  model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+  model_config: ClassVar[SettingsConfigDict] = SettingsConfigDict(
+    env_file=".env", extra="ignore"
+  )
 
   @field_validator("NEO4J_PASSWORD")
   @classmethod

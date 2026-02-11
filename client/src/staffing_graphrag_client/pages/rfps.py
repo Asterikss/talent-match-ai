@@ -1,14 +1,16 @@
+from typing import Any
+
 import streamlit as st
 
 from api.client import get_rfps
 from utils.utils import set_backgroud
 
 
-def _skill_badge(skill: dict) -> str:
-  level = skill.get("level", "")
-  mandatory = skill.get("mandatory", False)
-  name = skill.get("name", "Unknown")
-  icon = "🔴" if mandatory else "⚪"
+def _skill_badge(skill: dict[str, Any]) -> str:
+  level: str = skill.get("level", "")
+  mandatory: bool = skill.get("mandatory", False)
+  name: str = skill.get("name", "Unknown")
+  icon: str = "🔴" if mandatory else "⚪"
   return f"{icon} {name} ({level})"
 
 

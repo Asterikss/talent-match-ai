@@ -1,5 +1,4 @@
 import streamlit as st
-
 from api.client import get_programmers
 from utils.utils import set_backgroud
 
@@ -28,7 +27,6 @@ def render():
   st.markdown(f"**{n_programmers}** programmer{'s' if n_programmers > 1 else ''} found")
 
   for prog in programmers:
-    print(prog)
     with st.container(border=True):
       col1, col2 = st.columns([3, 1])
 
